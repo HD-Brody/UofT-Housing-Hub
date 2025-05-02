@@ -1,4 +1,8 @@
+import time
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -22,33 +26,35 @@ def get_kijiji_driver() -> webdriver.Chrome:
     return webdriver.Chrome(service=service, options=options)
 
 
-def get_kijiji_listings(url: str, budget: int, beds: float, baths: float) -> List[Dict[str, str]]:
+def get_kijiji_listings(url: str) -> List[Dict[str, str]]:
     """
     Scrape listing summaries, then enrich them in parallel.
     """
-    main_driver = get_kijiji_driver()
-    main_driver.get(url)
+    driver = get_kijiji_driver()
+    driver.get(url)
 
-    cards = get_listing_cards(main_driver)
+    # apply_filters(driver)
+
+    cards = get_listing_cards(driver)
     listings = []
     for card in cards:
-        listing = parse_listing_card(card, budget, beds, baths)
-        if listing:
-            listings.append(listing)
-    main_driver.quit()
+        listing = parse_listing_card(card)
+        listings.append(listing)
+    driver.quit()
 
-    # Multithreaded detail scraping
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        enriched = list(executor.map(enrich_listing_details, listings))
+    # # Multithreaded detail scraping
+    # with ThreadPoolExecutor(max_workers=5) as executor:
+    #     enriched = list(executor.map(enrich_listing_details, listings))
 
-    return enriched
+    # return enriched
+    return listings
 
 
 def get_listing_cards(driver: WebDriver) -> List[WebElement]:
     return driver.find_elements(By.CSS_SELECTOR, 'section[data-testid="listing-card"]')
 
 
-def parse_listing_card(card: WebElement, budget: int, beds: float, baths: float) -> Dict[str, str]:
+def parse_listing_card(card: WebElement) -> Dict[str, str]:
     try:
         title = card.find_element(By.CSS_SELECTOR, 'h3[data-testid="listing-title"]').text
     except:
@@ -56,9 +62,6 @@ def parse_listing_card(card: WebElement, budget: int, beds: float, baths: float)
 
     try:
         price = card.find_element(By.CSS_SELECTOR, 'div[data-testid="listing-price-container"]').text
-        price_num = int(price.replace("$", "").replace(",", "")[:-3].strip())
-        if price_num > budget:
-            return None
     except:
         price = "N/A"
 
@@ -69,15 +72,11 @@ def parse_listing_card(card: WebElement, budget: int, beds: float, baths: float)
 
     try:
         bedrooms = card.find_element(By.CSS_SELECTOR, 'li[aria-label="Bedrooms"]').text
-        if float(bedrooms) != beds:
-            return None
     except:
         bedrooms = "N/A"
 
     try:
         bathrooms = card.find_element(By.CSS_SELECTOR, 'li[aria-label="Bathrooms"]').text
-        if float(bathrooms) < baths:
-            return None
     except:
         bathrooms = "N/A"
 
@@ -120,12 +119,50 @@ def enrich_listing_details(listing: Dict[str, str]) -> Dict[str, str]:
     return listing
 
 
-if __name__ == "__main__":
-    base_url = "https://www.kijiji.ca/b-apartments-condos/city-of-toronto/c37l1700273?address=University%20of%20Toronto%2C%20King%27s%20College%20Circle%2C%20Toronto%2C%20ON&ll=43.663487%2C-79.3958273&radius=2"
-    
-    budget = int(input("Max budget: "))
-    num_beds = float(input('Num beds: '))
-    min_bathrooms = float(input('Min bathrooms: '))
+def construct_kijiji_url(budget=None, bedrooms=None, bathrooms=None):
+    base_url = "https://www.kijiji.ca/b-apartments-condos/city-of-toronto/"
 
-    results = get_kijiji_listings(base_url, budget, num_beds, min_bathrooms)
+    # Build the keyword path segment
+    keywords = []
+    if bathrooms:
+        keywords.append(f"{bathrooms}+bathroom" if bathrooms == 1 else f"{bathrooms}+bathrooms")
+    if bedrooms:
+        keywords.append(f"{bedrooms}+bedroom" if bedrooms == 1 else f"{bedrooms}+bedrooms")
+    
+    if keywords:
+        base_url += "-".join(keywords) + "/"
+
+    # Category and filter codes (in proper order)
+    category = "c37l1700273"
+    filters = []
+    if bathrooms:
+        filters.append("a120")
+    if bedrooms:
+        filters.append("a27949001")
+
+    category_with_filters = category + "".join(filters)
+    base_url += category_with_filters
+
+    # Query parameters
+    query_params = {
+        "radius": "2.0",
+        "address": "University+of+Toronto%2C+King%27s+College+Circle%2C+Toronto%2C+ON",
+        "ll": "43.663487%2C-79.3958273",
+        "view": "list"
+    }
+    if budget:
+        query_params["price"] = f"0__{budget}"
+
+    query_string = "&".join(f"{key}={value}" for key, value in query_params.items())
+
+    return f"{base_url}?{query_string}"
+
+
+if __name__ == "__main__":
+    budget = int(input("Max budget: "))
+    num_beds = int(input('Num beds: '))
+    min_bathrooms = int(input('Min bathrooms: '))
+    
+    url = construct_kijiji_url(budget,num_beds,min_bathrooms)
+    results = get_kijiji_listings(url)
     pprint.pprint(results)
