@@ -39,6 +39,7 @@ def get_kijiji_listings(url: str) -> List[Dict[str, str]]:
     listings = []
     for card in cards:
         listing = parse_listing_card(card)
+        # pprint.pprint(listing)
         listings.append(listing)
     driver.quit()
 
@@ -158,11 +159,35 @@ def construct_kijiji_url(budget=None, bedrooms=None, bathrooms=None):
     return f"{base_url}?{query_string}"
 
 
+def filtered_listings(listings: List[Dict[str, str]], budget: int, beds: int, baths: int) -> None:
+    """ 
+    Return copy of listings without listings that do not fit the user's preferences.
+    """
+
+    listings_copy = listings[:]
+
+    i = 0
+    while i < len(listings_copy):
+        listing = listings[i]
+        if listing["price"] == "Please Contact":
+            i += 1
+        if (int(listing["price"].replace("$","").replace(",","").replace(".","")[:-2]) > budget or 
+                float(listing["bedrooms"]) != beds or 
+                float(listing["bathrooms"]) < baths):
+            listings_copy.pop(i)
+        else:
+            i += 1
+
+    return listings_copy
+
+
 if __name__ == "__main__":
     budget = int(input("Max budget: "))
     num_beds = int(input('Num beds: '))
     min_bathrooms = int(input('Min bathrooms: '))
     
     url = construct_kijiji_url(budget,num_beds,min_bathrooms)
+    print(url)
     results = get_kijiji_listings(url)
-    pprint.pprint(results)
+    filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
+    pprint.pprint(filtered)
