@@ -1,8 +1,5 @@
-from scrapers.kijiji_scraper import get_kijiji_driver
+from scrapers.kijiji_scraper import get_kijiji_listings
+from scrapers.padmapper_scraper import get_padmapper_listings
+from housing_db import init_db
 
-driver = get_kijiji_driver()
-driver.get("https://www.kijiji.ca/b-apartments-condos/city-of-toronto/c37l1700273")
-
-print(driver.title)  # Should print the title of the page
-
-driver.quit()  # Always quit when done
+init_db()
