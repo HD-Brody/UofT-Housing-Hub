@@ -23,7 +23,7 @@ def get_driver() -> webdriver.Chrome:
     return webdriver.Chrome(service=service, options=options)
 
 
-def get_kijiji_listings(url: str) -> List[Dict[str, str]]:
+def get_padmapper_listings(url: str) -> List[Dict[str, str]]:
     """
     Scrape listing summaries, then enrich them in parallel.
     """
@@ -33,9 +33,10 @@ def get_kijiji_listings(url: str) -> List[Dict[str, str]]:
     cards = get_listing_cards(driver)
     listings = []
     for card in cards:
-        listing = parse_listing_card(card)
-        # pprint.pprint(listing)
-        listings.append(listing)
+        if card.text:
+            listing = parse_listing_card(card)
+            # pprint.pprint(listing)
+            listings.append(listing)
     driver.quit()
 
     # # Multithreaded detail scraping
@@ -43,38 +44,31 @@ def get_kijiji_listings(url: str) -> List[Dict[str, str]]:
     #     enriched = list(executor.map(enrich_listing_details, listings))
 
     # return enriched
+
     return listings
 
 
 def get_listing_cards(driver: WebDriver) -> List[WebElement]:
-    return driver.find_elements(By.CSS_SELECTOR, 'section[data-testid="listing-card"]')
+    container = driver.find_element(By.CSS_SELECTOR, 'div[class="list_listItemContainer__h1gh6"]')
+    container2 = container.find_element(By.XPATH, "./div")
+    listings = container2.find_elements(By.XPATH, "./div")
+    return listings
 
 
 def parse_listing_card(card: WebElement) -> Dict[str, str]:
-    try:
-        title = card.find_element(By.CSS_SELECTOR, 'h3[data-testid="listing-title"]').text
-    except:
-        title = "N/A"
-
-    try:
-        price = card.find_element(By.CSS_SELECTOR, 'div[data-testid="listing-price-container"]').text
-    except:
-        price = "N/A"
-
-    try:
-        url = card.find_element(By.CSS_SELECTOR, 'a[data-testid="listing-link"]').get_attribute("href")
-    except:
-        url = "N/A"
-
-    try:
-        bedrooms = card.find_element(By.CSS_SELECTOR, 'li[aria-label="Bedrooms"]').text
-    except:
-        bedrooms = "N/A"
-
-    try:
-        bathrooms = card.find_element(By.CSS_SELECTOR, 'li[aria-label="Bathrooms"]').text
-    except:
+    txt_list = card.text.split("\n")
+    if txt_list[0] == 'ONLINE TOURS' or txt_list[0] == 'VERIFIED':
+        txt_list.pop(0)
+    
+    title = txt_list[3] + ', ' + txt_list[2]
+    price = txt_list[0]
+    bedrooms = txt_list[1][0]
+    if "Bathroom" in txt_list[1]:
+        bathrooms = txt_list[1][txt_list[1].index("Bathroom")-2]
+    else:
         bathrooms = "N/A"
+    
+    url = card.find_element(By.CSS_SELECTOR, 'a').get_attribute("href")
 
     return {
         "title": title, 
@@ -115,43 +109,15 @@ def enrich_listing_details(listing: Dict[str, str]) -> Dict[str, str]:
     return listing
 
 
-def construct_kijiji_url(budget=None, bedrooms=None, bathrooms=None):
-    base_url = "https://www.kijiji.ca/b-apartments-condos/city-of-toronto/"
+def construct_padmapper_url(budget=None, bedrooms=None, bathrooms=None):
+    base_url = "https://www.padmapper.com/apartments/toronto-on/university-of-toronto"
+    suffix = "box=-79.40926,43.65619,-79.38034,43.67045"
 
-    # Build the keyword path segment
-    keywords = []
-    if bathrooms:
-        keywords.append(f"{bathrooms}+bathroom" if bathrooms == 1 else f"{bathrooms}+bathrooms")
-    if bedrooms:
-        keywords.append(f"{bedrooms}+bedroom" if bedrooms == 1 else f"{bedrooms}+bedrooms")
-    
-    if keywords:
-        base_url += "-".join(keywords) + "/"
+    bath_str = f"?bathrooms={bathrooms}&" if bathrooms else "?"
+    bed_str = f"/{bedrooms}-beds" if bedrooms else ""
+    budget_str = f"/under-{budget}" if budget else ""
 
-    # Category and filter codes (in proper order)
-    category = "c37l1700273"
-    filters = []
-    if bathrooms:
-        filters.append("a120")
-    if bedrooms:
-        filters.append("a27949001")
-
-    category_with_filters = category + "".join(filters)
-    base_url += category_with_filters
-
-    # Query parameters
-    query_params = {
-        "radius": "2.0",
-        "address": "University+of+Toronto%2C+King%27s+College+Circle%2C+Toronto%2C+ON",
-        "ll": "43.663487%2C-79.3958273",
-        "view": "list"
-    }
-    if budget:
-        query_params["price"] = f"0__{budget}"
-
-    query_string = "&".join(f"{key}={value}" for key, value in query_params.items())
-
-    return f"{base_url}?{query_string}"
+    return f"{base_url}{bed_str}{budget_str}{bath_str}{suffix}"
 
 
 def filtered_listings(listings: List[Dict[str, str]], budget: int, beds: int, baths: int) -> None:
@@ -184,8 +150,8 @@ if __name__ == "__main__":
     num_beds = input('Num beds: ')
     min_bathrooms = input('Min bathrooms: ')
     
-    url = construct_kijiji_url(budget,num_beds,min_bathrooms)
+    url = construct_padmapper_url(budget,num_beds,min_bathrooms)
     print(url)
-    results = get_kijiji_listings(url)
-    filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
-    pprint.pprint(filtered)
+    results = get_padmapper_listings(url)
+    # filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
+    pprint.pprint(results)
