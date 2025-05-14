@@ -57,7 +57,7 @@ def get_listing_cards(driver: WebDriver) -> List[WebElement]:
 
 def parse_listing_card(card: WebElement) -> Dict[str, str]:
     txt_list = card.text.split("\n")
-    if txt_list[0] == 'ONLINE TOURS' or txt_list[0] == 'VERIFIED':
+    if 'ONLINE TOURS' in txt_list[0] or 'VERIFIED' in txt_list[0]:
         txt_list.pop(0)
     
     title = txt_list[3] + ', ' + txt_list[2]
