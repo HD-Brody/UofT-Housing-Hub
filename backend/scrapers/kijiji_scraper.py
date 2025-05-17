@@ -57,7 +57,7 @@ def parse_listing_card(card: WebElement) -> Dict[str, str]:
         title = "N/A"
 
     try:
-        price = card.find_element(By.CSS_SELECTOR, 'div[data-testid="listing-price-container"]').text
+        price = (card.find_element(By.CSS_SELECTOR, 'div[data-testid="listing-price-container"]').text)[:-3]
     except:
         price = "N/A"
 
