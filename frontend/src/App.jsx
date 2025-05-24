@@ -25,7 +25,7 @@ function App() {
   return (
     <div>
       <nav className="navbar">
-        <h2>STUDENT HOUSING FINDER</h2>
+        <h2>UofT Housing Hub</h2>
         <div className="menu">
           <ul className="menuItems">
             <li><a href="#home">Home</a></li>
@@ -35,7 +35,7 @@ function App() {
         </div>
       </nav>
 
-      <h1 className="title">Find Student Housing Near UofT</h1>
+      <h1 className="subtitle">Find Student Housing Near UofT</h1>
 
       <div className="userInputContainer">
         <div className="userInputs">
@@ -90,8 +90,8 @@ function App() {
         </div>
       </div>
 
-      <div style={{ marginTop: "2rem" }}>
-        <h2>Results</h2>
+      <div className="listings-div" style={{ marginTop: "2rem" }}>
+        <h2>Matching Listings</h2>
         {results.length === 0 && <p>No listings found.</p>}
         <ul>
           {results.map((listing, index) => (
