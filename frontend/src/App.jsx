@@ -6,6 +6,7 @@ function App() {
   const [minBaths, setMinBaths] = useState("");
   const [maxWalkTime, setMaxWalkTime] = useState("");
   const [results, setResults] = useState([]);
+  const [showListings, setShowListings] = useState(false);
 
   const handleSearch = async () => {
     const response = await fetch("http://localhost:5000/api/listings", {
@@ -20,6 +21,7 @@ function App() {
 
     const data = await response.json();
     setResults(data);
+    setShowListings(true)
   };
 
   return (
@@ -90,21 +92,38 @@ function App() {
         </div>
       </div>
 
-      <div className="listings-div" style={{ marginTop: "2rem" }}>
-        <h2>Matching Listings</h2>
-        {results.length === 0 && <p>No listings found.</p>}
-        <ul>
-          {results.map((listing, index) => (
-            <li key={index} style={{ marginBottom: "1rem" }}>
-              <strong>{listing.title}</strong><br />
-              {listing.price} — {listing.bedrooms} bed / {listing.bathrooms} bath<br />
-              {listing.address}<br />
-              <a href={listing.url} target="_blank" rel="noopener noreferrer">View Listing</a><br />
-              <em>Source: {listing.source}</em>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {showListings && (
+        <div className="listings-div" style={{ marginTop: "2rem" }}>
+          <h2>Matching Listings</h2>
+          {results.length === 0 && <p>No listings found.</p>}
+          <ul className="listings-list">
+            {results.map((listing, index) => (
+              <div className="listing-box">
+                <li key={index} style={{ marginBottom: "1rem" }}>
+                  <div className="listing-text">
+                    <h3>
+                      {listing.price}
+                    </h3>
+
+                    <h4>
+                      {listing.title}
+                    </h4>
+
+                    <p>
+                      {listing.bedrooms} Bed, {listing.bathrooms} Bath
+                    </p>
+                    
+                    <a href={listing.url} target="_blank" rel="noopener noreferrer">
+                      View Listing
+                    </a>
+                  </div>
+                </li>
+              </div>
+            ))}
+          </ul>
+        </div>
+      )}
+      
     </div>
   );
 }
