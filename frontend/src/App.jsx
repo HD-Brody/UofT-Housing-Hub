@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons'; // regular (outline)
+import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';   // solid (filled)
 
 function App() {
   const [maxPrice, setMaxPrice] = useState("");
@@ -7,6 +10,7 @@ function App() {
   const [maxWalkTime, setMaxWalkTime] = useState("");
   const [results, setResults] = useState([]);
   const [showListings, setShowListings] = useState(false);
+  const [likedListings, setLikedListings] = useState({});
 
   const handleSearch = async () => {
     const response = await fetch("http://localhost:5000/api/listings", {
@@ -97,29 +101,37 @@ function App() {
           <h2>Matching Listings</h2>
           {results.length === 0 && <p>No listings found.</p>}
           <ul className="listings-list">
-            {results.map((listing, index) => (
-              <div className="listing-box">
-                <li key={index} style={{ marginBottom: "1rem" }}>
-                  <div className="listing-text">
-                    <h3>
-                      {listing.price}
-                    </h3>
+            {results.map((listing, index) => {
+              const isLiked = likedListings[index] || false;
 
-                    <h4>
-                      {listing.title}
-                    </h4>
+              const toggleLike = () => {
+                setLikedListings(prev => ({
+                  ...prev,
+                  [index]: !isLiked
+                }));
+              };
 
-                    <p>
-                      {listing.bedrooms} Bed, {listing.bathrooms} Bath
-                    </p>
-                    
-                    <a href={listing.url} target="_blank" rel="noopener noreferrer">
-                      View Listing
-                    </a>
-                  </div>
-                </li>
-              </div>
-            ))}
+              return (
+                <div className="listing-box" key={index}>
+                  <button className="heart-button" onClick={toggleLike}
+                    style={isLiked ? {color: "#ff4d4d"} : {color:"grey"}}>
+                    <FontAwesomeIcon icon={isLiked ? fasHeart : farHeart} />
+                  </button>
+                  <li style={{ marginBottom: "1rem" }}>
+                    <div className="listing-text">
+                      <h3>{listing.price}</h3>
+                      <h4>{listing.title}</h4>
+                      <p>{listing.bedrooms} Bed, {listing.bathrooms} Bath</p>
+                      <div className="link-right">
+                        <a href={listing.url} target="_blank" rel="noopener noreferrer">
+                          View Listing
+                        </a>
+                      </div>
+                    </div>
+                  </li>
+                </div>
+              );
+            })}
           </ul>
         </div>
       )}
