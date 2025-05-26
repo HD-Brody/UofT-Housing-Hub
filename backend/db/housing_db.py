@@ -49,7 +49,7 @@ def insert_listing(listing: dict, source: str):
     conn.close()
 
 
-def get_filtered_listings(max_price=None, min_bedrooms=None, min_bathrooms=None) -> list[dict]:
+def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None) -> list[dict]:
     conn = sqlite3.connect("listings.db")
     c = conn.cursor()
 
@@ -67,9 +67,9 @@ def get_filtered_listings(max_price=None, min_bedrooms=None, min_bathrooms=None)
         query += " AND CAST(REPLACE(REPLACE(price, '$', ''), ',', '') AS INTEGER) <= ?"
         params.append(max_price)
 
-    if min_bedrooms:
-        query += " AND CAST(bedrooms AS FLOAT) >= ?"
-        params.append(min_bedrooms)
+    if num_bedrooms:
+        query += " AND CAST(bedrooms AS FLOAT) = ?"
+        params.append(num_bedrooms)
 
     if min_bathrooms:
         query += " AND CAST(bathrooms AS FLOAT) >= ?"

@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from db.housing_db import init_db, get_filtered_listings
-from logic.pipeline import add_listings_from_input
+from logic.pipeline import scrape_and_insert
 
 app = Flask(__name__)
 CORS(app)
@@ -13,9 +13,17 @@ def listings():
     min_beds = data.get("min_beds")
     min_baths = data.get("min_baths")
 
-    add_listings_from_input(max_price, min_beds, min_baths)  # Scrape + insert into DB
-    listings = get_filtered_listings(max_price, min_beds, min_baths)
-    return jsonify(listings)
+    results = get_filtered_listings(max_price, min_beds, min_baths)
+
+    if len(results) >= 7:
+        print("✅ Returned from DB cache")
+        return jsonify(results)
+    
+    print("⚠️ Scraping fresh listings...")
+    scrape_and_insert(max_price, min_beds, min_baths)
+    new_results = get_filtered_listings(max_price, min_beds, min_baths)
+    return jsonify(new_results)
+    
 
 if __name__ == "__main__":
     init_db()
