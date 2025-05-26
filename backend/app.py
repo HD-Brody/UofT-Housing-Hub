@@ -17,12 +17,9 @@ def listings():
     results = get_filtered_listings(max_price, min_beds, min_baths)
 
     if len(results) >= 7:
-        print("There's enough listings, nice")
         enrich_listings(results)
-        results = get_filtered_listings(max_price, min_beds, min_baths, walk_time_minutes)
         return jsonify(results)
     
-    print("Not enough listings, gotta scrape")
     scrape_and_insert(max_price, min_beds, min_baths)
     new_results = get_filtered_listings(max_price, min_beds, min_baths)
     enrich_listings(new_results)
