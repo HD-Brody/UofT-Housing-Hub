@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons'; // regular (outline)
 import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';   // solid (filled)
+import { faHouseUser } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
   const [maxPrice, setMaxPrice] = useState("");
@@ -11,8 +12,10 @@ function App() {
   const [results, setResults] = useState([]);
   const [showListings, setShowListings] = useState(false);
   const [likedListings, setLikedListings] = useState({});
+  const [showLoading, setShowLoading] = useState(false)
 
   const handleSearch = async () => {
+    setShowLoading(true);
     const response = await fetch("http://localhost:5000/api/listings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -25,13 +28,15 @@ function App() {
 
     const data = await response.json();
     setResults(data);
-    setShowListings(true)
+    setShowLoading(false);
+    setShowListings(true);
   };
 
   return (
     <div>
       <nav className="navbar">
-        <h2>UofT Housing Hub</h2>
+        
+        <h2> <FontAwesomeIcon icon={faHouseUser} style={{ fontSize: "24px", color: "#3b82f6" }} /> UofT Housing Hub</h2>
         <div className="menu">
           <ul className="menuItems">
             <li><a href="#home">Home</a></li>
@@ -95,6 +100,8 @@ function App() {
           </button>
         </div>
       </div>
+
+      {showLoading && (<div class="loader"></div>)}
 
       {showListings && (
         <div className="listings-div" style={{ marginTop: "2rem" }}>

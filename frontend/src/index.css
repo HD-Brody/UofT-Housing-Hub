@@ -166,6 +166,27 @@ code {
 
 
 
+.loader {
+  margin-top: 40px;
+  margin-inline: auto;
+  border: 8px solid rgb(219, 219, 219); /* Light grey */
+  border-top: 8px solid hsl(217, 91%, 60%); /* Blue */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+
+
+
 .listings-list {
   list-style-type: none;
   margin: 0;
@@ -185,6 +206,12 @@ code {
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.197);
   position: relative;
+  transition: transform 0.2s ease;
+}
+
+.listing-box:hover {
+  transition: transform 0.2s ease;
+  transform: scale(1.025);
 }
 
 .listing-text {
