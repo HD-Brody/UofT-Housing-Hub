@@ -23,6 +23,7 @@ function App() {
         max_price: parseInt(maxPrice),
         min_beds: parseFloat(numBeds),
         min_baths: parseFloat(minBaths),
+        walk_time_minutes: parseFloat(maxWalkTime)
       }),
     });
 
@@ -131,6 +132,7 @@ function App() {
                       <h3>{listing.price}</h3>
                       <h4>{listing.title}</h4>
                       <p>{listing.bedrooms} Bed, {listing.bathrooms} Bath</p>
+                      <p>{listing.walk_time_minutes} min walk from campus</p>
                       <div className="link-right">
                         <a href={listing.url} target="_blank" rel="noopener noreferrer">
                           View Listing

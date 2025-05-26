@@ -12,17 +12,21 @@ def listings():
     max_price = data.get("max_price")
     min_beds = data.get("min_beds")
     min_baths = data.get("min_baths")
+    walk_time_minutes = data.get("walk_time_minutes")
 
     results = get_filtered_listings(max_price, min_beds, min_baths)
 
     if len(results) >= 7:
+        print("There's enough listings, nice")
         enrich_listings(results)
-        print("nuff listings, we good")
+        results = get_filtered_listings(max_price, min_beds, min_baths, walk_time_minutes)
         return jsonify(results)
     
+    print("Not enough listings, gotta scrape")
     scrape_and_insert(max_price, min_beds, min_baths)
     new_results = get_filtered_listings(max_price, min_beds, min_baths)
     enrich_listings(new_results)
+    new_results = get_filtered_listings(max_price, min_beds, min_baths, walk_time_minutes)
     return jsonify(new_results)
     
 

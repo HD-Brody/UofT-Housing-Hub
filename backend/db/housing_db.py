@@ -49,13 +49,13 @@ def insert_listing(listing: dict, source: str):
     conn.close()
 
 
-def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None) -> list[dict]:
+def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None, walk_time_minutes=None) -> list[dict]:
     conn = sqlite3.connect("listings.db")
     c = conn.cursor()
 
     # Base query
     query = """
-        SELECT title, price, address, bedrooms, bathrooms, description, url, source
+        SELECT title, price, address, bedrooms, bathrooms, description, url, source, walk_time_minutes
         FROM listings
         WHERE 1=1
     """
@@ -75,6 +75,11 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None)
         query += " AND CAST(bathrooms AS FLOAT) >= ?"
         params.append(min_bathrooms)
 
+    if walk_time_minutes:
+        query += " AND CAST(walk_time_minutes AS FLOAT) <= ?"
+        params.append(walk_time_minutes)
+
+    
     query += " ORDER BY id DESC"
 
     c.execute(query, params)
@@ -91,7 +96,8 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None)
             "bathrooms": row[4],
             "description": row[5],
             "url": row[6],
-            "source": row[7]
+            "source": row[7],
+            "walk_time_minutes": row[8]
         }
         for row in rows
     ]
@@ -109,3 +115,8 @@ def update_listing_info(url: str, address: str = None, walk_time: float = None) 
 
     conn.commit()
     conn.close()
+
+
+if __name__ == "__main__":
+    test_filtered = get_filtered_listings(3000, 3, 1, 20)
+    print([listing["walk_time_minutes"] for listing in test_filtered])
