@@ -5,10 +5,10 @@ import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';   // so
 import { faHouseUser } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
-  const [maxPrice, setMaxPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("2500");
   const [numBeds, setNumBeds] = useState("");
   const [minBaths, setMinBaths] = useState("");
-  const [maxWalkTime, setMaxWalkTime] = useState("");
+  const [maxWalkTime, setMaxWalkTime] = useState("20");
   const [results, setResults] = useState([]);
   const [showListings, setShowListings] = useState(false);
   const [likedListings, setLikedListings] = useState({});
@@ -89,9 +89,11 @@ function App() {
             <input
               type="number"
               min="5"
+              max="60"
               step="5"
               value={maxWalkTime}
               onChange={(e) => setMaxWalkTime(e.target.value)}
+              onKeyDown={(e) => e.preventDefault()}
             />
           </div>
 
