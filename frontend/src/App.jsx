@@ -108,7 +108,7 @@ function App() {
       {showListings && (
         <div className="listings-div" style={{ marginTop: "2rem" }}>
           <h2>Matching Listings</h2>
-          {results.length === 0 && <p>No listings found.</p>}
+          {results.length === 0 && <p className="no-listings-found">No listings found.</p>}
           <ul className="listings-list">
             {results.map((listing, index) => {
               const isLiked = likedListings[index] || false;
