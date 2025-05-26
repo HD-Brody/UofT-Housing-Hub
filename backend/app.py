@@ -16,10 +16,10 @@ def listings():
     results = get_filtered_listings(max_price, min_beds, min_baths)
 
     if len(results) >= 7:
-        print("✅ Returned from DB cache")
+        print("Returned from DB cache")
         return jsonify(results)
     
-    print("⚠️ Scraping fresh listings...")
+    print("Scraping fresh listings...")
     scrape_and_insert(max_price, min_beds, min_baths)
     new_results = get_filtered_listings(max_price, min_beds, min_baths)
     return jsonify(new_results)

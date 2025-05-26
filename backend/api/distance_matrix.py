@@ -51,5 +51,5 @@ def get_coordinates(address: str, api_key: str) -> tuple:
 
 
 if __name__ == '__main__':
-    test_address = "New Toronto, Toronto, 2,6,7,8 Park Vista Apartments"
+    test_address = "MAIN - 6 POPLAR PLAINS CRESCENT, Toronto (Casa Loma), ON, M4V1E8"
     print(get_travel_details(test_address))

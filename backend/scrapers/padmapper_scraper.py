@@ -18,7 +18,7 @@ def get_driver() -> webdriver.Chrome:
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
 
-    driver_path = "chromedriver-win64\\chromedriver.exe"
+    driver_path = "backend\chromedriver-win64\chromedriver.exe"
     service = Service(executable_path=driver_path)
     return webdriver.Chrome(service=service, options=options)
 
@@ -145,13 +145,24 @@ def filtered_listings(listings: List[Dict[str, str]], budget: int, beds: int, ba
     return listings_copy
 
 
+def get_address_from_url(listing_url: str) -> str:
+    driver = get_driver()
+    driver.get(listing_url)
+    try:
+        address_element = driver.find_element(By.XPATH, "//h5[text()='Address']/following-sibling::div")
+        return address_element.text
+    except:
+        return "N/A"
+
+
 if __name__ == "__main__":
-    budget = input("Max budget: ")
-    num_beds = input('Num beds: ')
-    min_bathrooms = input('Min bathrooms: ')
+    # budget = input("Max budget: ")
+    # num_beds = input('Num beds: ')
+    # min_bathrooms = input('Min bathrooms: ')
     
-    url = construct_padmapper_url(budget,num_beds,min_bathrooms)
-    print(url)
-    results = get_padmapper_listings(url)
-    # filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
-    pprint.pprint(results)
+    # url = construct_padmapper_url(budget,num_beds,min_bathrooms)
+    # print(url)
+    # results = get_padmapper_listings(url)
+    # # filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
+    # pprint.pprint(results)
+    print(get_address_from_url("https://www.padmapper.com/rentals/61455257/3-bedroom-2-bath-apartment-at-6-poplar-plains-crescent-toronto-on-m4v-1e8#back=%2Fapartments%2Ftoronto-on%2Funiversity-of-toronto%2F3-beds%2Funder-3000%3Fbathrooms%3D1%26box%3D-79.40926%2C43.65619%2C-79.38034%2C43.67045"))

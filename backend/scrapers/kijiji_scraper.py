@@ -18,7 +18,7 @@ def get_driver() -> webdriver.Chrome:
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
 
-    driver_path = "chromedriver-win64\\chromedriver.exe"
+    driver_path = "backend\chromedriver-win64\chromedriver.exe"
     service = Service(executable_path=driver_path)
     return webdriver.Chrome(service=service, options=options)
 
@@ -179,13 +179,40 @@ def filtered_listings(listings: List[Dict[str, str]], budget: int, beds: int, ba
     return listings_copy
 
 
+def add_address(listing: Dict[str, str]) -> None:
+    driver = get_driver()
+    try:
+        driver.get(listing['url'])
+        try:
+            wait = WebDriverWait(driver, 5)
+            address_btn =  wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[class="sc-c8742e84-0 fukShK"]')))
+            listing["address"] = address_btn.text
+        except:
+            listing["address"] = "N/A"
+
+    except:
+        listing["address"] = "N/A"
+
+
+def get_address_from_url(listing_url: str) -> str:
+    driver = get_driver()
+    driver.get(listing_url)
+    try:
+        address_btn = driver.find_element(By.CSS_SELECTOR, 'button[class="sc-c8742e84-0 fukShK"]')
+        return address_btn.text
+    except:
+        return "N/A"
+
+
 if __name__ == "__main__":
-    budget = input("Max budget: ")
-    num_beds = input('Num beds: ')
-    min_bathrooms = input('Min bathrooms: ')
+    # budget = input("Max budget: ")
+    # num_beds = input('Num beds: ')
+    # min_bathrooms = input('Min bathrooms: ')
     
-    url = construct_kijiji_url(budget,num_beds,min_bathrooms)
-    print(url)
-    results = get_kijiji_listings(url)
-    filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
-    pprint.pprint(filtered)
+    # url = construct_kijiji_url(budget,num_beds,min_bathrooms)
+    # print(url)
+    # results = get_kijiji_listings(url)
+    # filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
+    # pprint.pprint(filtered)
+
+    print(get_address_from_url("https://www.kijiji.ca/v-apartments-condos/city-of-toronto/main-6-poplar-plains-crescent-toronto-casa-loma-ontario/1717046274"))
