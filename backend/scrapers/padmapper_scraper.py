@@ -18,7 +18,7 @@ def get_driver() -> webdriver.Chrome:
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
 
-    driver_path = "backend\chromedriver-win64\chromedriver.exe"
+    driver_path = "chromedriver-win64\chromedriver.exe"
     service = Service(executable_path=driver_path)
     return webdriver.Chrome(service=service, options=options)
 

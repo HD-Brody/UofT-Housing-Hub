@@ -23,7 +23,7 @@ def init_db():
 
 
 def insert_listing(listing: dict, source: str):
-    conn = sqlite3.connect("listings.db")
+    conn = sqlite3.connect("backend\listings.db")
     c = conn.cursor()
 
     try:
@@ -95,3 +95,17 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None)
         }
         for row in rows
     ]
+
+
+def update_listing_info(url: str, address: str = None, walk_time: float = None) -> None:
+    conn = sqlite3.connect("listings.db")
+    c = conn.cursor()
+
+    if address:
+        c.execute("UPDATE listings SET address = ? WHERE url = ?", (address, url))
+
+    if walk_time:
+        c.execute("UPDATE listings SET walk_time_minutes = ? WHERE url = ?", (walk_time, url))
+
+    conn.commit()
+    conn.close()
