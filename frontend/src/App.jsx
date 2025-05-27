@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons'; // regular (outline)
 import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';   // solid (filled)
 import { faHouseUser } from '@fortawesome/free-solid-svg-icons';
+import { useMemo } from "react";
 
 function App() {
   const [maxPrice, setMaxPrice] = useState("2500");
@@ -12,7 +13,9 @@ function App() {
   const [results, setResults] = useState([]);
   const [showListings, setShowListings] = useState(false);
   const [likedListings, setLikedListings] = useState({});
-  const [showLoading, setShowLoading] = useState(false)
+  const [showLoading, setShowLoading] = useState(false);
+  const [sortBy, setSortBy] = useState("");
+
 
   const handleSearch = async () => {
     setShowLoading(true);
@@ -32,6 +35,33 @@ function App() {
     setShowLoading(false);
     setShowListings(true);
   };
+
+
+  const sortedResults = useMemo(() => {
+    if (!sortBy) return results;
+
+    const sorted = [...results];
+
+    switch (sortBy) {
+      case "Lowest price":
+        sorted.sort((a, b) => parseInt(a.price.replace(/\D/g, "")) - parseInt(b.price.replace(/\D/g, "")));
+        break;
+      case "Hightest price":
+        sorted.sort((a, b) => parseInt(b.price.replace(/\D/g, "")) - parseInt(a.price.replace(/\D/g, "")));
+        break;
+      case "Shortest distance":
+        sorted.sort((a, b) => a.walk_time_minutes - b.walk_time_minutes);
+        break;
+      case "Longest distance":
+        sorted.sort((a, b) => b.walk_time_minutes - a.walk_time_minutes);
+        break;
+      default:
+        break;
+    }
+
+    return sorted;
+  }, [results, sortBy]);
+
 
   return (
     <div>
@@ -109,9 +139,14 @@ function App() {
       {showListings && (
         <div className="listings-div" style={{ marginTop: "2rem" }}>
           <h2>Matching Listings</h2>
+          <select className="sort-by" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            {["", "Lowest price", "Hightest price", "Shortest distance", "Longest distance"].map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
           {results.length === 0 && <p className="no-listings-found">No listings found.</p>}
           <ul className="listings-list">
-            {results.map((listing, index) => {
+            {sortedResults.map((listing, index) => {
               const isLiked = likedListings[index] || false;
 
               const toggleLike = () => {
