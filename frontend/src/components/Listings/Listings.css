@@ -1,0 +1,119 @@
+.loader {
+  margin-top: 40px;
+  margin-inline: auto;
+  border: 8px solid rgb(219, 219, 219); /* Light grey */
+  border-top: 8px solid hsl(217, 91%, 60%); /* Blue */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+.sort-by {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 17px;
+  min-width: 160px;
+  font-size: 16px;
+  margin-bottom: 25px;
+  margin-left: 66%;
+}
+
+.sort-by option {
+  font-size: 15px;
+  font-family: "Segoe UI";
+}
+
+
+
+.listings-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.listings-div h2 {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.no-listings-found {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.listing-box {
+  display: flex;
+  flex-direction: column;
+  margin: 0 25% 20px 25%;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.197);
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.listing-box:hover {
+  transition: transform 0.2s ease;
+  transform: scale(1.025);
+}
+
+.listing-text {
+  padding: 15px 40px 25px 40px;
+  line-height: 10px;
+}
+
+.listing-text h3 {
+  font-size: 23px;
+  font-weight: 600;
+}
+
+.listing-text h4 {
+  font-size: 18px;
+  line-height: 20px;
+}
+
+.listing-text p {
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.listing-text a {
+  color: rgb(44, 46, 51);
+  text-decoration: none;
+  font-size: 18px;
+  padding: 5px 15px 6px 15px;
+  border: 3px solid #e9e9e9;
+  border-radius: 6px;
+} 
+
+.link-right {
+  text-align: right;
+}
+
+
+.heart-button {
+  position: absolute;
+  top: 30px;
+  right: 35px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.heart-button svg {
+  transition: transform 0.2s ease;
+}
+
+.heart-button:hover {
+  transform: scale(1.1);
+}
