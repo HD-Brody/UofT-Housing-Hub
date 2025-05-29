@@ -66,15 +66,15 @@ export function Listings({
                             </button>
                             <li style={{ marginBottom: "1rem" }}>
                                 <div className="listing-text">
-                                <h3>{listing.price}</h3>
-                                <h4>{listing.title}</h4>
-                                <p>{listing.bedrooms} Bed, {listing.bathrooms} Bath</p>
-                                <p>{listing.walk_time_minutes} min walk from campus</p>
-                                <div className="link-right">
-                                    <a href={listing.url} target="_blank" rel="noopener noreferrer">
-                                    View Listing
-                                    </a>
-                                </div>
+                                    <h3>{listing.price}</h3>
+                                    <h4>{listing.title}</h4>
+                                    <p>{listing.bedrooms} Bed, {listing.bathrooms} Bath</p>
+                                    <p>{listing.walk_time_minutes} min walk from campus</p>
+                                    <div className="link-right">
+                                        <a href={listing.url} target="_blank" rel="noopener noreferrer">
+                                        View Listing
+                                        </a>
+                                    </div>
                                 </div>
                             </li>
                             </div>

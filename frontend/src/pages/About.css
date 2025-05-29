@@ -1,0 +1,15 @@
+.about-page {
+    max-width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.about-page h1 {
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.about-page p {
+    font-size: 23px;
+}
