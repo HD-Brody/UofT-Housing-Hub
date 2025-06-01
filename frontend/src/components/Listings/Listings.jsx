@@ -1,5 +1,6 @@
 import './Listings.css';
 import { useMemo } from "react";
+import { toggleFavourites, isFavourite } from '../../pages/Favourites';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons'; // regular (outline)
 import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';   // solid (filled)
@@ -11,8 +12,12 @@ export function Listings({
     setSortBy,
     results,
     likedListings,
-    setLikedListings
+    setLikedListings,
+    customToggleLike,
+    title = "Matching Listings", // default title
+    titleClass // optional CSS class
 }) {
+
     const sortedResults = useMemo(() => {
         if (!sortBy) return results;
 
@@ -40,7 +45,7 @@ export function Listings({
 
             {showListings && (
                 <div className="listings-div" style={{ marginTop: "2rem" }}>
-                    <h2>Matching Listings</h2>
+                    <h2 className={titleClass || "default-title"}>{title}</h2>
                     <select className="sort-by" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                         {["", "Lowest price", "Hightest price", "Shortest distance", "Longest distance"].map((n) => (
                         <option key={n} value={n}>{n}</option>
@@ -52,10 +57,15 @@ export function Listings({
                         const isLiked = likedListings[index] || false;
 
                         const toggleLike = () => {
-                            setLikedListings(prev => ({
-                            ...prev,
-                            [index]: !isLiked
-                            }));
+                            if (customToggleLike) {
+                                customToggleLike(listing);
+                            } else {
+                                toggleFavourites(listing.id);
+                                setLikedListings(prev => ({
+                                ...prev,
+                                [index]: !isLiked
+                                }));
+                            }  
                         };
 
                         return (

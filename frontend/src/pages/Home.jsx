@@ -3,6 +3,7 @@ import { useMemo } from "react";
 
 import { UserInputs } from "../components/UserInputs/UserInputs";
 import { Listings } from "../components/Listings/Listings";
+import { isFavourite } from "./Favourites";
 
 
 export function Home() {
@@ -32,6 +33,13 @@ export function Home() {
 
         const data = await response.json();
         setResults(data);
+
+        const liked = {};
+        data.forEach((listing, index) => {
+            liked[index] = isFavourite(listing.id);
+        });
+        setLikedListings(liked);
+
         setShowLoading(false);
         setShowListings(true);
     };

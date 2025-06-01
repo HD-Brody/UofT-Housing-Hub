@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import sqlite3
 from db.housing_db import init_db, get_filtered_listings
 from logic.pipeline import scrape_and_insert, enrich_listings
 
@@ -26,7 +27,31 @@ def listings():
     enrich_listings(new_results)
     new_results = get_filtered_listings(max_price, min_beds, min_baths, walk_time_minutes)
     return jsonify(new_results)
+
+
+@app.route('/api/favourites', methods=['POST'])
+def get_favourites():
+    ids = request.json.get('ids', [])
+    if not ids:
+        return jsonify([])
     
+    conn = sqlite3.connect("listings.db")
+    c = conn.cursor()
+
+    placeholders = ",".join("?" for _ in ids)
+    query = f"""
+        SELECT id, title, price, address, bedrooms, bathrooms, description, url, source, walk_time_minutes
+        FROM listings
+        WHERE id IN ({placeholders})
+    """
+
+    c.execute(query, ids)
+    rows = c.fetchall()
+
+    listings = [dict(zip([column[0] for column in c.description], row)) for row in rows]
+
+    return jsonify(listings)
+
 
 if __name__ == "__main__":
     init_db()

@@ -55,7 +55,7 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None,
 
     # Base query
     query = """
-        SELECT title, price, address, bedrooms, bathrooms, description, url, source, walk_time_minutes
+        SELECT id, title, price, address, bedrooms, bathrooms, description, url, source, walk_time_minutes
         FROM listings
         WHERE 1=1
     """
@@ -89,15 +89,16 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None,
     # Convert to list of dictionaries
     return [
         {
-            "title": row[0],
-            "price": row[1],
-            "address": row[2],
-            "bedrooms": row[3],
-            "bathrooms": row[4],
-            "description": row[5],
-            "url": row[6],
-            "source": row[7],
-            "walk_time_minutes": row[8]
+            "id": row[0],
+            "title": row[1],
+            "price": row[2],
+            "address": row[3],
+            "bedrooms": row[4],
+            "bathrooms": row[5],
+            "description": row[6],
+            "url": row[7],
+            "source": row[8],
+            "walk_time_minutes": row[9]
         }
         for row in rows
     ]
