@@ -1,5 +1,6 @@
 import time
 import pprint
+import os
 from typing import List, Dict
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -18,8 +19,15 @@ def get_driver() -> webdriver.Chrome:
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
 
-    driver_path = "chromedriver-win64\chromedriver.exe"
-    service = Service(executable_path=driver_path)
+    # Get current file directory (scrapers/)
+    scraper_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Path to chromedriver.exe (go up one to backend/, then into chromedriver-win64/)
+    driver_path = os.path.join(scraper_dir, "..", "chromedriver-win64", "chromedriver.exe")
+    driver_path = os.path.abspath(driver_path)
+
+    # Start driver
+    service = Service(driver_path)
     return webdriver.Chrome(service=service, options=options)
 
 
@@ -81,7 +89,8 @@ def parse_listing_card(card: WebElement) -> Dict[str, str]:
         "price": price, 
         "url": url, 
         "bedrooms": bedrooms,
-        "bathrooms": bathrooms
+        "bathrooms": bathrooms,
+        "source": "Kijiji"
         }
 
 
@@ -154,7 +163,7 @@ def construct_kijiji_url(budget=None, bedrooms=None, bathrooms=None):
     return f"{base_url}?{query_string}"
 
 
-def filtered_listings(listings: List[Dict[str, str]], budget: int, beds: int, baths: int) -> None:
+def filtered_listings(listings: List[Dict[str, str]], budget: int = None, beds: int = None, baths: int = None) -> None:
     """ 
     Return copy of listings without listings that do not fit the user's preferences.
     """

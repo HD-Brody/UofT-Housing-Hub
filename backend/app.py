@@ -1,6 +1,7 @@
+import sqlite3
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import sqlite3
+from apscheduler.schedulers.background import BackgroundScheduler
 from db.housing_db import init_db, get_filtered_listings
 from logic.pipeline import scrape_and_insert, enrich_listings
 
@@ -53,6 +54,19 @@ def get_favourites():
     return jsonify(listings)
 
 
+def scheduled_scrape():
+    print("Running scheduled scrape...")
+    new_listings = scrape_and_insert()
+    enrich_listings(new_listings)
+
+
 if __name__ == "__main__":
-    init_db()
+    # init_db()
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=scheduled_scrape, trigger="interval", hours=6)
+    scheduler.start()
+
+    import atexit
+    atexit.register(lambda: scheduler.shutdown())
+
     app.run(debug=True)

@@ -5,7 +5,7 @@ from db.housing_db import update_listing_info
 from api.distance_matrix import get_travel_details
 
 
-def scrape_and_insert(budget: int, num_beds: float, min_bathrooms: float) -> None:
+def scrape_and_insert(budget: int = None, num_beds: float = None, min_bathrooms: float = None) -> list[dict]:
     kijiji_url = construct_kijiji_url(budget, num_beds, min_bathrooms)
     padmapper_url = construct_padmapper_url(budget, num_beds, min_bathrooms)
 
@@ -20,6 +20,7 @@ def scrape_and_insert(budget: int, num_beds: float, min_bathrooms: float) -> Non
         insert_listing(listing, "Padmapper")
 
     print("All listings inserted")
+    return kijiji_results + padmapper_results
 
 
 def enrich_listings(results: list[dict]):

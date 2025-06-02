@@ -1,7 +1,19 @@
+import os
 import sqlite3
 
+
+# Get the directory of the current file (i.e., db/)
+db_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Go up one level to backend/
+project_root = os.path.abspath(os.path.join(db_dir, ".."))
+
+# Build path to listings.db inside backend/
+db_path = os.path.join(project_root, "listings.db")
+
+
 def init_db():
-    conn = sqlite3.connect("listings.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
     c.execute("""
@@ -23,7 +35,7 @@ def init_db():
 
 
 def insert_listing(listing: dict, source: str):
-    conn = sqlite3.connect("backend\listings.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
     try:
@@ -50,7 +62,7 @@ def insert_listing(listing: dict, source: str):
 
 
 def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None, walk_time_minutes=None) -> list[dict]:
-    conn = sqlite3.connect("listings.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
     # Base query
@@ -105,7 +117,7 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None,
 
 
 def update_listing_info(url: str, address: str = None, walk_time: float = None) -> None:
-    conn = sqlite3.connect("listings.db")
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
     if address:
