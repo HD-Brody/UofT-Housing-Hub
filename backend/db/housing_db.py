@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from backend.scrapers.image_scraper import get_first_image_url
 
 
 # Get the directory of the current file (i.e., db/)
@@ -130,6 +131,38 @@ def update_listing_info(url: str, address: str = None, walk_time: float = None) 
     conn.close()
 
 
+def add_image_urls_to_listings() -> None:
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    c.execute("SELECT id, url FROM listings WHERE image_url IS NULL")
+    listings = c.fetchall()
+
+    print(f"Found {len(listings)} listings to process.")
+    count = 1
+
+    for listing_id, url in listings:
+        img_url = get_first_image_url(url)
+        try:
+            c.execute("UPDATE listings SET image_url = ? WHERE id = ?", (img_url, listing_id))
+            conn.commit()
+            print(f"Image saved {count}/{len(listings)}: {img_url}")
+        except:
+            print(f"Could not add image to {url}")
+        count += 1
+
+    conn.close()
+    print("Done adding images")
+
+
+def add_col(col_name: str) -> None:
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    c.execute(f"ALTER TABLE listings ADD COLUMN {col_name} REAL")
+    conn.commit()
+    conn.close()
+
+
 if __name__ == "__main__":
-    test_filtered = get_filtered_listings(3000, 3, 1, 20)
-    print([listing["walk_time_minutes"] for listing in test_filtered])
+    add_image_urls_to_listings()

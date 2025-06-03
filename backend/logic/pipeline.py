@@ -42,6 +42,7 @@ def enrich_listings(results: list[dict]):
                 updated = True
                 print(f"Added address: {address}")
 
+        # Walk time
         if "walk_time_minutes" not in listing or not listing.get("walk_time_minutes"):
             try:
                 if not listing.get("address") or listing["address"].strip() == "" or listing["address"] == "N/A":

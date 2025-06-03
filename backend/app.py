@@ -62,11 +62,12 @@ def scheduled_scrape():
 
 if __name__ == "__main__":
     # init_db()
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=scheduled_scrape, trigger="interval", hours=6)
-    scheduler.start()
+    # scheduled_scrape()
+    # scheduler = BackgroundScheduler()
+    # scheduler.add_job(func=scheduled_scrape, trigger="interval", hours=6)
+    # scheduler.start()
 
-    import atexit
-    atexit.register(lambda: scheduler.shutdown())
+    # import atexit
+    # atexit.register(lambda: scheduler.shutdown())
 
     app.run(debug=True)
