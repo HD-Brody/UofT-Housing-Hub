@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from backend.scrapers.image_scraper import get_first_image_url
+from scrapers.image_scraper import get_first_image_url
 
 
 # Get the directory of the current file (i.e., db/)
@@ -68,7 +68,7 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None,
 
     # Base query
     query = """
-        SELECT id, title, price, address, bedrooms, bathrooms, description, url, source, walk_time_minutes
+        SELECT id, title, price, address, bedrooms, bathrooms, description, url, source, walk_time_minutes, image_url
         FROM listings
         WHERE 1=1
     """
@@ -111,7 +111,8 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None,
             "description": row[6],
             "url": row[7],
             "source": row[8],
-            "walk_time_minutes": row[9]
+            "walk_time_minutes": row[9],
+            "image_url": row[10]
         }
         for row in rows
     ]
