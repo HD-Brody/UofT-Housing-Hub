@@ -1,5 +1,6 @@
 import './Listings.css';
 import { useMemo } from "react";
+import { MapView } from '../Map/Map';
 import { toggleFavourites, isFavourite } from '../../pages/Favourites';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons'; // regular (outline)
@@ -42,6 +43,8 @@ export function Listings({
     return (
         <>
             {showLoading && (<div class="loader"></div>)}
+
+            {showListings && <MapView listings={results}/>}
 
             {showListings && (
                 <div className="listings-div" style={{ marginTop: "2rem" }}>
