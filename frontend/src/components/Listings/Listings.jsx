@@ -70,11 +70,13 @@ export function Listings({
 
                         return (
                             <div className="listing-box" key={index}>
-                                <img src={listing.image_url} alt=''/>
                                 <button className="heart-button" onClick={toggleLike}
                                     style={isLiked ? {color: "#ff4d4d"} : {color:"grey"}}>
                                     <FontAwesomeIcon icon={isLiked ? fasHeart : farHeart} />
                                 </button>
+
+                                <img src={listing.image_url} alt='' className='listing-img'/>
+                                
                                 <li style={{ marginBottom: "1rem" }}>
                                     <div className="listing-text">
                                         <h3>{listing.price}</h3>

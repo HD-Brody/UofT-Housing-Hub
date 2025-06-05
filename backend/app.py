@@ -41,7 +41,7 @@ def get_favourites():
 
     placeholders = ",".join("?" for _ in ids)
     query = f"""
-        SELECT id, title, price, address, bedrooms, bathrooms, description, url, source, walk_time_minutes
+        SELECT id, title, price, address, bedrooms, bathrooms, description, url, source, walk_time_minutes, image_url
         FROM listings
         WHERE id IN ({placeholders})
     """
