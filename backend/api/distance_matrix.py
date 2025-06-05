@@ -17,7 +17,7 @@ def get_travel_details(address: str, mode = 'foot-walking', destination = (-79.3
     client = openrouteservice.Client(key=api_key)
 
     #Get coords from address name: (lon, lat)
-    coords = get_coordinates(address, api_key)
+    coords = get_coordinates(address)
     print(coords[1],coords[0])
 
     route = client.directions(coordinates=(coords, destination), profile='foot-walking',format='geojson')
@@ -28,7 +28,12 @@ def get_travel_details(address: str, mode = 'foot-walking', destination = (-79.3
     return round(duration_seconds/60, 1), round(distance_meters/1000, 2)
 
 
-def get_coordinates(address: str, api_key: str) -> tuple:
+def get_coordinates(address: str) -> tuple:
+    # Load environment variables from .env file
+    load_dotenv()  
+
+    api_key = os.getenv("ORS_API_KEY")
+
     url = "https://api.openrouteservice.org/geocode/search"
     params = {
         "api_key": api_key,
@@ -51,5 +56,5 @@ def get_coordinates(address: str, api_key: str) -> tuple:
 
 
 if __name__ == '__main__':
-    test_address = "MAIN - 6 POPLAR PLAINS CRESCENT, Toronto (Casa Loma), ON, M4V1E8"
+    test_address = "View all"
     print(get_travel_details(test_address))

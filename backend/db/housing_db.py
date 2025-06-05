@@ -1,6 +1,8 @@
 import os
 import sqlite3
-from scrapers.image_scraper import get_first_image_url
+from dotenv import load_dotenv
+# from backend.scrapers.image_scraper import get_first_image_url
+# from backend.api.distance_matrix import get_coordinates
 
 
 # Get the directory of the current file (i.e., db/)
@@ -68,7 +70,7 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None,
 
     # Base query
     query = """
-        SELECT id, title, price, address, bedrooms, bathrooms, description, url, source, walk_time_minutes, image_url
+        SELECT id, title, price, address, bedrooms, bathrooms, description, url, source, walk_time_minutes, image_url, lon, lat
         FROM listings
         WHERE 1=1
     """
@@ -112,7 +114,9 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None,
             "url": row[7],
             "source": row[8],
             "walk_time_minutes": row[9],
-            "image_url": row[10]
+            "image_url": row[10],
+            "lon": row[11],
+            "lat": row[12]
         }
         for row in rows
     ]
@@ -156,6 +160,31 @@ def add_image_urls_to_listings() -> None:
     print("Done adding images")
 
 
+def add_lon_lat_to_listings() -> None:
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    c.execute("SELECT id, address FROM listings WHERE walk_time_minutes IS NOT NULL OR walk_time_minutes != 222.6")
+    listings = c.fetchall()
+
+    print(f"Found {len(listings)} listings to process.")
+    count = 1
+
+    for listing_id, address in listings:
+        lon, lat = get_coordinates(address)
+        try:
+            c.execute("UPDATE listings SET lon = ? WHERE id = ?", (lon, listing_id))
+            c.execute("UPDATE listings SET lat = ? WHERE id = ?", (lat, listing_id))
+            conn.commit()
+            print(f"Coords saved {count}/{len(listings)}: {lon, lat}")
+        except:
+            print(f"Could not add coords")
+        count += 1
+
+    conn.close()
+    print("Done adding lon and lat")
+
+
 def add_col(col_name: str) -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
@@ -166,4 +195,4 @@ def add_col(col_name: str) -> None:
 
 
 if __name__ == "__main__":
-    add_image_urls_to_listings()
+    add_lon_lat_to_listings()
