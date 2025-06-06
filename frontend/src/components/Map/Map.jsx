@@ -14,10 +14,15 @@ export function MapView({ listings }) {
             />
             {listings.map((listing, i) => (
                 <Marker key={i} position={[listing.lat, listing.lon]}>
-                    <Popup>
-                        <strong>{listing.title}</strong><br />
-                        {listing.price}<br />
-                        {listing.address}
+                    <Popup className="custom-popup">
+                        <div className='popup-content'>
+                            <img src={listing.image_url} alt='' className='popup-img'/>
+                            <div className='popup-text'>
+                                <strong>{listing.title}</strong><br />
+                                {listing.price}<br />
+                                {listing.address}
+                            </div>
+                        </div>
                     </Popup>
                 </Marker>
             ))}

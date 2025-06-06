@@ -44,11 +44,10 @@ export function Listings({
         <>
             {showLoading && (<div class="loader"></div>)}
 
-            {showListings && <MapView listings={results}/>}
-
             {showListings && (
                 <div className="listings-div" style={{ marginTop: "2rem" }}>
                     <h2 className={titleClass || "default-title"}>{title}</h2>
+                    <MapView listings={results}/>
                     <select className="sort-by" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                         {["", "Lowest price", "Hightest price", "Shortest distance", "Longest distance"].map((n) => (
                         <option key={n} value={n}>{n}</option>
