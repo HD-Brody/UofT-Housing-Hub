@@ -8,6 +8,7 @@
     text-align: center;
     font-size: 30px;
     font-weight: 700;
+    margin-bottom: 30px;
 }
 
 
@@ -33,10 +34,9 @@
   padding: 15px;
   border: 1px solid #ccc;
   border-radius: 17px;
-  min-width: 160px;
+  width: fit-content;
   font-size: 16px;
-  margin-bottom: 25px;
-  margin-left: 66%;
+  margin: 0 35px 10px auto;
 }
 
 .sort-by option {
@@ -46,10 +46,29 @@
 
 
 
+.map-and-listings {
+  display: flex;
+  flex-direction: row;
+  margin: 0 5% 100px 5%;
+  gap: 20px;
+}
+
+
+
+.sort-btn-and-listings {
+  height: 800px;
+  display: flex;
+  flex-direction: column;
+}
+
+.listings {
+  overflow: scroll;
+}
+
 .listings-list {
   list-style-type: none;
   margin: 0;
-  padding: 0;
+  padding: 15px 20px 0 20px;
 }
 
 /* .listings-div h2 {
@@ -67,7 +86,7 @@
 .listing-box {
   display: flex;
   flex-direction: row;
-  margin: 0 25% 20px 25%;
+  margin: 0 0 20px 0;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.197);
   position: relative;
@@ -76,12 +95,12 @@
 
 .listing-box:hover {
   transition: transform 0.2s ease;
-  transform: scale(1.025);
+  transform: scale(1.015);
 }
 
 .listing-img {
-  width: 250px;
-  height: 250px;
+  width: 200px;
+  height: 200px;
   border-radius: 30px;
   padding: 20px;
 }

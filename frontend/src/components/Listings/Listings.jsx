@@ -47,55 +47,66 @@ export function Listings({
             {showListings && (
                 <div className="listings-div" style={{ marginTop: "2rem" }}>
                     <h2 className={titleClass || "default-title"}>{title}</h2>
-                    <MapView listings={results}/>
-                    <select className="sort-by" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                        {["", "Lowest price", "Hightest price", "Shortest distance", "Longest distance"].map((n) => (
-                        <option key={n} value={n}>{n}</option>
-                        ))}
-                    </select>
-                    {results.length === 0 && <p className="no-listings-found">No listings found.</p>}
-                    <ul className="listings-list">
-                        {sortedResults.map((listing, index) => {
-                        const isLiked = likedListings[index] || false;
+                    
+                    <div className='map-and-listings'>
+                        <MapView listings={results}/>
 
-                        const toggleLike = () => {
-                            if (customToggleLike) {
-                                customToggleLike(listing);
-                            } else {
-                                toggleFavourites(listing.id);
-                                setLikedListings(prev => ({
-                                ...prev,
-                                [index]: !isLiked
-                                }));
-                            }  
-                        };
+                        <div className='sort-btn-and-listings'>
+                            <select className="sort-by" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                                {["", "Lowest price", "Hightest price", "Shortest distance", "Longest distance"].map((n) => (
+                                <option key={n} value={n}>{n}</option>
+                                ))}
+                            </select>
 
-                        return (
-                            <div className="listing-box" key={index}>
-                                <button className="heart-button" onClick={toggleLike}
-                                    style={isLiked ? {color: "#ff4d4d"} : {color:"grey"}}>
-                                    <FontAwesomeIcon icon={isLiked ? fasHeart : farHeart} />
-                                </button>
+                            {results.length === 0 && <p className="no-listings-found">No listings found.</p>}
+                            
+                            <div className='listings'>
+                                <ul className="listings-list">
+                                    {sortedResults.map((listing, index) => {
+                                    const isLiked = likedListings[index] || false;
 
-                                <img src={listing.image_url} alt='' className='listing-img'/>
-                                
-                                <li style={{ marginBottom: "1rem" }}>
-                                    <div className="listing-text">
-                                        <h3>{listing.price}</h3>
-                                        <h4>{listing.title}</h4>
-                                        <p>{listing.bedrooms} Bed, {listing.bathrooms} Bath</p>
-                                        <p>{listing.walk_time_minutes} min walk from campus</p>
-                                        <div className="link-right">
-                                            <a href={listing.url} target="_blank" rel="noopener noreferrer">
-                                            View Listing
-                                            </a>
+                                    const toggleLike = () => {
+                                        if (customToggleLike) {
+                                            customToggleLike(listing);
+                                        } else {
+                                            toggleFavourites(listing.id);
+                                            setLikedListings(prev => ({
+                                            ...prev,
+                                            [index]: !isLiked
+                                            }));
+                                        }  
+                                    };
+
+                                    return (
+                                        <div className="listing-box" key={index}>
+                                            <button className="heart-button" onClick={toggleLike}
+                                                style={isLiked ? {color: "#ff4d4d"} : {color:"grey"}}>
+                                                <FontAwesomeIcon icon={isLiked ? fasHeart : farHeart} />
+                                            </button>
+
+                                            <img src={listing.image_url} alt='' className='listing-img'/>
+                                            
+                                            <li style={{ marginBottom: "1rem" }}>
+                                                <div className="listing-text">
+                                                    <h3>{listing.price}</h3>
+                                                    <h4>{listing.title}</h4>
+                                                    <p>{listing.bedrooms} Bed, {listing.bathrooms} Bath</p>
+                                                    <p>{listing.walk_time_minutes} min walk from campus</p>
+                                                    <div className="link-right">
+                                                        <a href={listing.url} target="_blank" rel="noopener noreferrer">
+                                                        View Listing
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </li>
                                         </div>
-                                    </div>
-                                </li>
+                                    );
+                                    })}
+                                </ul>
                             </div>
-                        );
-                        })}
-                    </ul>
+                            
+                        </div>
+                    </div>
                 </div>
             )}
         </>
