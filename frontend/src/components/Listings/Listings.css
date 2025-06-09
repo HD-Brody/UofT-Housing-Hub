@@ -30,6 +30,16 @@
 
 
 
+.listings-found-and-sort-by {
+  display: flex;
+  flex-direction: row;
+}
+
+.listings-found {
+  margin-left: 20px;
+  font-size: 18px;
+}
+
 .sort-by {
   padding: 15px;
   border: 1px solid #ccc;

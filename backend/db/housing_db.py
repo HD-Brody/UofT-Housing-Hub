@@ -232,26 +232,34 @@ def add_address_where_needed() -> None:
     print("Done adding addresses")
 
 
-def remove_old_padmapper_listings() -> None:
+def remove_old_listings() -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    c.execute("SELECT address FROM listings WHERE address = 'View all'")
+    c.execute("SELECT id, url, source FROM listings")
     listings = c.fetchall()
     print(f"Found {len(listings)} listings to delete.")
     count = 1
 
-    for address in listings:
+    for listing_id, url, source in listings:
         try:
-            c.execute("DELETE FROM listings WHERE address = ?", address)
-            conn.commit()
-            print((f"Deleted listing {count}/{len(listings)}"))
+            is_old = False
+            if source == "Kijiji":
+                pass
+            elif source == "Padmapper":
+                pass
+
+            if is_old:
+                c.execute("DELETE FROM listings WHERE url = ?", url)
+                conn.commit()
+                print((f"Deleted {count} listings: {url}"))
+                count += 1
         except:
             print("Could not find listing in database")
-    
+        
     conn.close()
     print("Done deleting listings")
 
 
 if __name__ == "__main__":
-    add_address_where_needed()
+    pass

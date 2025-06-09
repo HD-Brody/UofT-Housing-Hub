@@ -45,7 +45,9 @@ export function Listings({
         <>
             {showLoading && (<div class="loader"></div>)}
 
-            {showListings && (
+            {showListings && results.length === 0 && <p className="no-listings-found">No listings found.</p>}
+
+            {showListings && results.length != 0  && (
                 <div className="listings-div" style={{ marginTop: "2rem" }}>
                     <h2 className={titleClass || "default-title"}>{title}</h2>
 
@@ -53,13 +55,15 @@ export function Listings({
                         <MapView listings={results} hoveredListingUrl={hoveredListingUrl} />
 
                         <div className='sort-btn-and-listings'>
-                            <select className="sort-by" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                                {["", "Lowest price", "Hightest price", "Shortest distance", "Longest distance"].map((n) => (
-                                    <option key={n} value={n}>{n}</option>
-                                ))}
-                            </select>
+                            <div className='listings-found-and-sort-by'>
+                                <p className='listings-found'>Found {results.length} listings</p>
 
-                            {results.length === 0 && <p className="no-listings-found">No listings found.</p>}
+                                <select className="sort-by" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                                    {["", "Lowest price", "Hightest price", "Shortest distance", "Longest distance"].map((n) => (
+                                        <option key={n} value={n}>{n}</option>
+                                    ))}
+                                </select>
+                            </div>
 
                             <div className='listings'>
                                 <ul className="listings-list">
