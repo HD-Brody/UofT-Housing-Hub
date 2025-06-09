@@ -1,8 +1,13 @@
 import os
+import sys
 import sqlite3
 from dotenv import load_dotenv
-# from backend.scrapers.image_scraper import get_first_image_url
-# from backend.api.distance_matrix import get_coordinates
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from scrapers.image_scraper import get_first_image_url
+from api.distance_matrix import get_coordinates
+from scrapers.kijiji_scraper import get_address_from_url as get_kijiji_address
+from scrapers.padmapper_scraper import get_address_from_url as get_padmapper_address
 
 
 # Get the directory of the current file (i.e., db/)
@@ -122,7 +127,7 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None,
     ]
 
 
-def update_listing_info(url: str, address: str = None, walk_time: float = None) -> None:
+def update_listing_info(url: str, address: str = None, walk_time: float = None, lon: float = None, lat: float = None) -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
@@ -131,6 +136,12 @@ def update_listing_info(url: str, address: str = None, walk_time: float = None) 
 
     if walk_time:
         c.execute("UPDATE listings SET walk_time_minutes = ? WHERE url = ?", (walk_time, url))
+
+    if lon:
+        c.execute("UPDATE listings SET lon = ? WHERE url = ?", (lon, url))
+
+    if lat:
+        c.execute("UPDATE listings SET lat = ? WHERE url = ?", (lat, url))
 
     conn.commit()
     conn.close()
@@ -194,5 +205,53 @@ def add_col(col_name: str) -> None:
     conn.close()
 
 
+def add_address_where_needed() -> None:
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    c.execute("SELECT url, source FROM listings WHERE address = ''")
+    listings = c.fetchall()
+
+    print(f"Found {len(listings)} listings to process.")
+    count = 1
+
+    for url, source in listings:
+        try:
+            if source == "Kijiji":
+                address = get_kijiji_address(url)
+            elif source == "Padmapper":
+                address = get_padmapper_address(url)
+            c.execute("UPDATE listings SET address = ? WHERE url = ?", (address, url))
+            conn.commit()
+            print(f"Coords saved {count}/{len(listings)}: {address}")
+        except:
+            print(f"Could not add address")
+        count += 1
+
+    conn.close()
+    print("Done adding addresses")
+
+
+def remove_old_padmapper_listings() -> None:
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+
+    c.execute("SELECT address FROM listings WHERE address = 'View all'")
+    listings = c.fetchall()
+    print(f"Found {len(listings)} listings to delete.")
+    count = 1
+
+    for address in listings:
+        try:
+            c.execute("DELETE FROM listings WHERE address = ?", address)
+            conn.commit()
+            print((f"Deleted listing {count}/{len(listings)}"))
+        except:
+            print("Could not find listing in database")
+    
+    conn.close()
+    print("Done deleting listings")
+
+
 if __name__ == "__main__":
-    add_lon_lat_to_listings()
+    add_address_where_needed()

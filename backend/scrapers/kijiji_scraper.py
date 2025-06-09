@@ -188,19 +188,19 @@ def filtered_listings(listings: List[Dict[str, str]], budget: int = None, beds: 
     return listings_copy
 
 
-def add_address(listing: Dict[str, str]) -> None:
-    driver = get_driver()
-    try:
-        driver.get(listing['url'])
-        try:
-            wait = WebDriverWait(driver, 5)
-            address_btn =  wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[class="sc-c8742e84-0 fukShK"]')))
-            listing["address"] = address_btn.text
-        except:
-            listing["address"] = "N/A"
+# def add_address(listing: Dict[str, str]) -> None:
+#     driver = get_driver()
+#     try:
+#         driver.get(listing['url'])
+#         try:
+#             wait = WebDriverWait(driver, 5)
+#             address_btn =  wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[class="sc-c8742e84-0 fukShK"]')))
+#             listing["address"] = address_btn.text
+#         except:
+#             listing["address"] = "N/A"
 
-    except:
-        listing["address"] = "N/A"
+#     except:
+#         listing["address"] = "N/A"
 
 
 def get_address_from_url(listing_url: str) -> str:
