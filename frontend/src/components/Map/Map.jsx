@@ -21,34 +21,13 @@ const hoverIcon = new L.Icon({
 });
 
 
-function findDuplicateLocations(listings) {
-    const locationMap = new Map();
-
-    for (const listing of listings) {
-        const key = `${listing.lat},${listing.lon}`;
-        if (!locationMap.has(key)) {
-            locationMap.set(key, []);
-        }
-        locationMap.get(key).push(listing);
-    }
-
-    // Filter to only include locations with more than one listing
-    const duplicates = [];
-    for (const [key, group] of locationMap.entries()) {
-        if (group.length > 1) {
-            duplicates.push({ location: key, listings: group });
-        }
-    }
-
-    return duplicates;
-}
-
-
 export function MapView({ listings, hoveredListingUrl }) {
     const [hoveredMarkerUrl, setHoveredMarkerUrl] = useState(null);
 
-    const duplicates = findDuplicateLocations(listings);
-    console.log('Duplicate locations:', duplicates);
+    function applyJitteredOffset(lat, lon, index) {
+        const offset = (index % 5) * 0.0002; // small offset in degrees
+        return [lat + offset, lon + offset];
+    }
 
     return (
         <MapContainer center={[43.662571, -79.39559]} zoom={15} className='map-container'>
@@ -56,13 +35,13 @@ export function MapView({ listings, hoveredListingUrl }) {
                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                 attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             />
-            {listings.map((listing) => {
+            {listings.map((listing, i) => {
                 const isHovered = hoveredListingUrl === listing.url || hoveredMarkerUrl === listing.url;
 
                 return (
                     <Marker
                         key={listing.url}
-                        position={[listing.lat, listing.lon]}
+                        position={applyJitteredOffset(listing.lat, listing.lon, i)}
                         icon={isHovered ? hoverIcon : defaultIcon}
                         eventHandlers={{
                             mouseover: () => setHoveredMarkerUrl(listing.url),

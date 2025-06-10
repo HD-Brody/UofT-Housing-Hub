@@ -1,4 +1,5 @@
 import sqlite3
+import pprint
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -21,6 +22,9 @@ def listings():
     if len(results) >= 7:
         enrich_listings(results)
         results = get_filtered_listings(max_price, min_beds, min_baths, walk_time_minutes)
+        print(f"Found {len(results)} results.")
+        for r in results:
+            pprint.pprint(r)
         return jsonify(results)
     
     scrape_and_insert(max_price, min_beds, min_baths)

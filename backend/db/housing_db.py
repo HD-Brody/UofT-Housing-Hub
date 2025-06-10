@@ -175,7 +175,7 @@ def update_all_listings() -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    c.execute("SELECT id, address, url FROM listings where walk_time_minutes IS NULL")
+    c.execute("SELECT id, address, url FROM listings where lat > 44")
     listings = c.fetchall()
 
     print(f"Found {len(listings)} listings to update")
@@ -184,7 +184,7 @@ def update_all_listings() -> None:
     for id, address, url in listings:
         print(f"Searching listing {count}/{len(listings)}")
         try:
-            walk_time, _ = get_travel_details(address)
+            walk_time, _ = get_travel_details(address[-7:])
             try:
                 lon, lat = get_coordinates(address[-7:])
                 update_listing_info(url, None, walk_time, lon, lat)
@@ -193,18 +193,8 @@ def update_all_listings() -> None:
                 print(f"Couldn't get coords for listing id: {id}, with walk time: {walk_time}")
                 lon, lat = None, None
         except:
-            try:
-                walk_time, _ = get_travel_details(address[-7:])
-                try:
-                    lon, lat = get_coordinates(address[-7:])
-                    update_listing_info(url, None, walk_time, lon, lat)
-                    print(f"Successfully updated listing id: {id}")
-                except:
-                    print(f"Couldn't get coords for listing id: {id}, with walk time: {walk_time}")
-                    lon, lat = None, None
-            except:
-                print(f"Couldn't get walk time for listing id: {id}")
-                walk_time = None
+            print(f"Couldn't get walk time for listing id: {id}")
+            walk_time = None
 
         count += 1
     
@@ -252,36 +242,5 @@ def remove_old_listings() -> None:
     print(f"Deleted {deleted} listings.")
 
 
-def temp() -> None:
-    conn = sqlite3.connect(db_path)
-    c = conn.cursor()
-
-    c.execute("SELECT id, address, url FROM listings WHERE walk_time_minutes > 1000")
-    listings = c.fetchall()
-
-    print(f"Found {len(listings)} listings to update")
-    count = 1
-    
-    for id, address, url in listings:
-        print(f"Searching listing {count}/{len(listings)}")
-        address = get_kijiji_address(url)
-        update_listing_info(url, address, None, None, None)
-        try:
-            walk_time, _ = get_travel_details(address[-7:])
-            try:
-                lon, lat = get_coordinates(address[-7:])
-                update_listing_info(url, None, walk_time, lon, lat)
-                print(f"Successfully updated listing id: {id}. Now walk time is: {walk_time}")
-            except:
-                print(f"Couldn't get coords for listing id: {id}, with walk time: {walk_time}")
-                lon, lat = None, None
-        except:
-            print(f"Couldn't get walk time for listing id: {id}")
-            walk_time = None
-
-        count += 1
-    
-    conn.close()
-
 if __name__ == "__main__":
-    temp()
+    update_all_listings()
