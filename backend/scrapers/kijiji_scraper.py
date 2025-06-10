@@ -201,6 +201,7 @@ def filtered_listings(listings: List[Dict[str, str]], budget: int = None, beds: 
 
 #     except:
 #         listing["address"] = "N/A"
+#     driver.quit()
 
 
 def get_address_from_url(listing_url: str) -> str:
@@ -208,9 +209,20 @@ def get_address_from_url(listing_url: str) -> str:
     driver.get(listing_url)
     try:
         address_btn = driver.find_element(By.CSS_SELECTOR, 'button[class="sc-c8742e84-0 fukShK"]')
+        driver.quit()
         return address_btn.text
     except:
+        driver.quit()
         return "N/A"
+    
+
+def check_if_old(listing_url: str) -> bool:
+    driver = get_driver()
+    driver.get(listing_url)
+
+    current_url = driver.current_url
+
+    return "Removed" in current_url
 
 
 if __name__ == "__main__":
@@ -224,4 +236,4 @@ if __name__ == "__main__":
     # filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
     # pprint.pprint(filtered)
 
-    print(get_address_from_url("https://www.kijiji.ca/v-apartments-condos/city-of-toronto/main-6-poplar-plains-crescent-toronto-casa-loma-ontario/1717046274"))
+    print(check_if_old("https://www.kijiji.ca/v-apartments-condos/city-of-toronto/bsmt-678-huron-street-toronto-annex-ontario/1712743878"))

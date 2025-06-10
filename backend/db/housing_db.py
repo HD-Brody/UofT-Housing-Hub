@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from scrapers.image_scraper import get_first_image_url
-from api.distance_matrix import get_coordinates
-from scrapers.kijiji_scraper import get_address_from_url as get_kijiji_address
+from api.distance_matrix import get_coordinates, get_travel_details
+from scrapers.kijiji_scraper import get_address_from_url as get_kijiji_address, check_if_old as kijiji_check_if_old
 from scrapers.padmapper_scraper import get_address_from_url as get_padmapper_address
 
 
@@ -171,29 +171,44 @@ def add_image_urls_to_listings() -> None:
     print("Done adding images")
 
 
-def add_lon_lat_to_listings() -> None:
+def update_all_listings() -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    c.execute("SELECT id, address FROM listings WHERE walk_time_minutes IS NOT NULL OR walk_time_minutes != 222.6")
+    c.execute("SELECT id, address, url FROM listings where walk_time_minutes IS NULL")
     listings = c.fetchall()
 
-    print(f"Found {len(listings)} listings to process.")
+    print(f"Found {len(listings)} listings to update")
     count = 1
-
-    for listing_id, address in listings:
-        lon, lat = get_coordinates(address)
+    
+    for id, address, url in listings:
+        print(f"Searching listing {count}/{len(listings)}")
         try:
-            c.execute("UPDATE listings SET lon = ? WHERE id = ?", (lon, listing_id))
-            c.execute("UPDATE listings SET lat = ? WHERE id = ?", (lat, listing_id))
-            conn.commit()
-            print(f"Coords saved {count}/{len(listings)}: {lon, lat}")
+            walk_time, _ = get_travel_details(address)
+            try:
+                lon, lat = get_coordinates(address[-7:])
+                update_listing_info(url, None, walk_time, lon, lat)
+                print(f"Successfully updated listing id: {id}")
+            except:
+                print(f"Couldn't get coords for listing id: {id}, with walk time: {walk_time}")
+                lon, lat = None, None
         except:
-            print(f"Could not add coords")
-        count += 1
+            try:
+                walk_time, _ = get_travel_details(address[-7:])
+                try:
+                    lon, lat = get_coordinates(address[-7:])
+                    update_listing_info(url, None, walk_time, lon, lat)
+                    print(f"Successfully updated listing id: {id}")
+                except:
+                    print(f"Couldn't get coords for listing id: {id}, with walk time: {walk_time}")
+                    lon, lat = None, None
+            except:
+                print(f"Couldn't get walk time for listing id: {id}")
+                walk_time = None
 
+        count += 1
+    
     conn.close()
-    print("Done adding lon and lat")
 
 
 def add_col(col_name: str) -> None:
@@ -205,61 +220,37 @@ def add_col(col_name: str) -> None:
     conn.close()
 
 
-def add_address_where_needed() -> None:
-    conn = sqlite3.connect(db_path)
-    c = conn.cursor()
-
-    c.execute("SELECT url, source FROM listings WHERE address = ''")
-    listings = c.fetchall()
-
-    print(f"Found {len(listings)} listings to process.")
-    count = 1
-
-    for url, source in listings:
-        try:
-            if source == "Kijiji":
-                address = get_kijiji_address(url)
-            elif source == "Padmapper":
-                address = get_padmapper_address(url)
-            c.execute("UPDATE listings SET address = ? WHERE url = ?", (address, url))
-            conn.commit()
-            print(f"Coords saved {count}/{len(listings)}: {address}")
-        except:
-            print(f"Could not add address")
-        count += 1
-
-    conn.close()
-    print("Done adding addresses")
-
-
 def remove_old_listings() -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    c.execute("SELECT id, url, source FROM listings")
+    c.execute("SELECT url, source FROM listings")
     listings = c.fetchall()
-    print(f"Found {len(listings)} listings to delete.")
+    print(f"Searching through {len(listings)} listings.")
     count = 1
+    deleted = 0
 
-    for listing_id, url, source in listings:
+    for url, source in listings:
+        print(f"Checking listing {count}/{len(listings)}")
         try:
             is_old = False
             if source == "Kijiji":
-                pass
+                is_old = kijiji_check_if_old(url)
             elif source == "Padmapper":
                 pass
 
             if is_old:
                 c.execute("DELETE FROM listings WHERE url = ?", url)
                 conn.commit()
-                print((f"Deleted {count} listings: {url}"))
-                count += 1
+                print((f"Deleted {deleted} listings: {url}"))
+                deleted += 1
         except:
             print("Could not find listing in database")
+        count += 1
         
     conn.close()
-    print("Done deleting listings")
+    print(f"Deleted {deleted} listings.")
 
 
 if __name__ == "__main__":
-    pass
+    update_all_listings()

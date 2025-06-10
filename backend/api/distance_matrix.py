@@ -18,7 +18,7 @@ def get_travel_details(address: str, mode = 'foot-walking', destination = (-79.3
 
     #Get coords from address name: (lon, lat)
     coords = get_coordinates(address)
-    print(coords[1],coords[0])
+    # print(coords[1],coords[0])
 
     route = client.directions(coordinates=(coords, destination), profile='foot-walking',format='geojson')
 
@@ -56,5 +56,5 @@ def get_coordinates(address: str) -> tuple:
 
 
 if __name__ == '__main__':
-    test_address = "View all"
+    test_address = "M6G1J8"
     print(get_travel_details(test_address))
