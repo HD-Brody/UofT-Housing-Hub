@@ -20,8 +20,35 @@ const hoverIcon = new L.Icon({
     className: 'hovered-marker'
 });
 
+
+function findDuplicateLocations(listings) {
+    const locationMap = new Map();
+
+    for (const listing of listings) {
+        const key = `${listing.lat},${listing.lon}`;
+        if (!locationMap.has(key)) {
+            locationMap.set(key, []);
+        }
+        locationMap.get(key).push(listing);
+    }
+
+    // Filter to only include locations with more than one listing
+    const duplicates = [];
+    for (const [key, group] of locationMap.entries()) {
+        if (group.length > 1) {
+            duplicates.push({ location: key, listings: group });
+        }
+    }
+
+    return duplicates;
+}
+
+
 export function MapView({ listings, hoveredListingUrl }) {
     const [hoveredMarkerUrl, setHoveredMarkerUrl] = useState(null);
+
+    const duplicates = findDuplicateLocations(listings);
+    console.log('Duplicate locations:', duplicates);
 
     return (
         <MapContainer center={[43.662571, -79.39559]} zoom={15} className='map-container'>

@@ -188,32 +188,18 @@ def filtered_listings(listings: List[Dict[str, str]], budget: int = None, beds: 
     return listings_copy
 
 
-# def add_address(listing: Dict[str, str]) -> None:
-#     driver = get_driver()
-#     try:
-#         driver.get(listing['url'])
-#         try:
-#             wait = WebDriverWait(driver, 5)
-#             address_btn =  wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[class="sc-c8742e84-0 fukShK"]')))
-#             listing["address"] = address_btn.text
-#         except:
-#             listing["address"] = "N/A"
-
-#     except:
-#         listing["address"] = "N/A"
-#     driver.quit()
-
-
 def get_address_from_url(listing_url: str) -> str:
     driver = get_driver()
     driver.get(listing_url)
+
     try:
-        address_btn = driver.find_element(By.CSS_SELECTOR, 'button[class="sc-c8742e84-0 fukShK"]')
-        driver.quit()
-        return address_btn.text
+        address_el = driver.find_element(By.XPATH, '//*[@style="text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"]')
+        inner = address_el.get_attribute("innerHTML").strip()
+        return inner
     except:
-        driver.quit()
         return "N/A"
+    finally:
+        driver.quit()
     
 
 def check_if_old(listing_url: str) -> bool:
@@ -236,4 +222,4 @@ if __name__ == "__main__":
     # filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
     # pprint.pprint(filtered)
 
-    print(check_if_old("https://www.kijiji.ca/v-apartments-condos/city-of-toronto/bsmt-678-huron-street-toronto-annex-ontario/1712743878"))
+    print(get_address_from_url("https://www.kijiji.ca/v-apartments-condos/city-of-toronto/downtown-toronto-near-chinatown-spacious-room/1711330231"))
