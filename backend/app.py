@@ -71,6 +71,7 @@ def smart_search():
 
     if raw_filters is None:
         return jsonify({"error": "AI failed to return valid JSON"}), 500
+    print(raw_filters)
     
     budget = raw_filters.get("budget")
     bedrooms = raw_filters.get("bedrooms")

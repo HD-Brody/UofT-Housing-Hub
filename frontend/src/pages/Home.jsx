@@ -44,6 +44,28 @@ export function Home() {
         setShowListings(true);
     };
 
+    
+    const handleAISearch = async (query) => {
+        setShowLoading(true);
+        const response = await fetch("http://localhost:5000/api/smart_search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+        });
+
+        const data = await response.json();
+        setResults(data);
+
+        const liked = {};
+        data.forEach((listing, index) => {
+            liked[index] = isFavourite(listing.id);
+        });
+        setLikedListings(liked);
+
+        setShowLoading(false);
+        setShowListings(true);
+    } 
+
 
     const sortedResults = useMemo(() => {
         if (!sortBy) return results;
@@ -74,6 +96,7 @@ export function Home() {
     return (
         <div>
             <UserInputs
+                handleAISearch={handleAISearch}
                 maxPrice={maxPrice}
                 setMaxPrice={setMaxPrice}
                 numBeds={numBeds}
