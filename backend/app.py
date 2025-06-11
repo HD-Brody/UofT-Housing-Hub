@@ -1,13 +1,16 @@
 import sqlite3
 import pprint
+import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
 from db.housing_db import init_db, get_filtered_listings
 from logic.pipeline import scrape_and_insert, enrich_listings
+from ai.ai_search import get_filters_from_query
 
 app = Flask(__name__)
 CORS(app)
+
 
 @app.route("/api/listings", methods=["POST"])
 def listings():
@@ -55,6 +58,26 @@ def get_favourites():
 
     listings = [dict(zip([column[0] for column in c.description], row)) for row in rows]
 
+    return jsonify(listings)
+
+
+@app.route("/api/smart_search", methods=["POST"])
+def smart_search():
+    user_input = request.json.get("query", "")
+    if not user_input:
+        return jsonify({"error": "No query provided"}), 400
+    
+    raw_filters = get_filters_from_query(user_input)
+
+    if raw_filters is None:
+        return jsonify({"error": "AI failed to return valid JSON"}), 500
+    
+    budget = raw_filters.get("budget")
+    bedrooms = raw_filters.get("bedrooms")
+    bathrooms = raw_filters.get("bathrooms")
+    max_walk_time = raw_filters.get("max_walk_time")
+
+    listings = get_filtered_listings(budget, bedrooms, bathrooms, max_walk_time)
     return jsonify(listings)
 
 
