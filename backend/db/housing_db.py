@@ -178,7 +178,7 @@ def update_all_listings() -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    c.execute("SELECT id, address, url FROM listings WHERE lat > 44")
+    c.execute("SELECT id, address, url FROM listings WHERE lon is NULL")
     listings = c.fetchall()
 
     print(f"Found {len(listings)} listings to update")
@@ -187,9 +187,11 @@ def update_all_listings() -> None:
     for id, address, url in listings:
         print(f"Searching listing {count}/{len(listings)}")
         try:
-            walk_time, _ = get_travel_details(address[-7:])
+            if address[-7][0] == "M":
+                address = address[-7]
+            walk_time, _ = get_travel_details(address)
             try:
-                lon, lat = get_coordinates(address[-7:])
+                lon, lat = get_coordinates(address)
                 update_listing_info(url, None, walk_time, lon, lat)
                 print(f"Successfully updated listing id: {id}")
             except:
@@ -237,8 +239,8 @@ def remove_old_listings() -> None:
                 conn.commit()
                 print((f"Deleted {deleted} listings: {url}"))
                 deleted += 1
-        except:
-            print("Could not find listing in database")
+        except Exception as e:
+            print(f"Could not find listing in database: {e}")
         count += 1
         
     conn.close()
@@ -246,4 +248,4 @@ def remove_old_listings() -> None:
 
 
 if __name__ == "__main__":
-    update_all_listings()
+    remove_old_listings()
