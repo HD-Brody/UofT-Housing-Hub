@@ -91,12 +91,13 @@ def scheduled_scrape():
     enrich_listings(new_listings)
 
 
-param_cycle = cycle([1, 2, 3, 4])
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=scheduled_scrape, trigger="interval", hours=2.5)
-scheduler.start()
-atexit.register(lambda: scheduler.shutdown())
+def start_scheduler():
+    global param_cycle
+    param_cycle = cycle([1, 2, 3, 4])
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=scheduled_scrape, trigger="interval", hours=2.5)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+start_scheduler()
