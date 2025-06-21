@@ -1,6 +1,7 @@
 import sqlite3
 import pprint
 import json
+import atexit
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from itertools import cycle
@@ -90,17 +91,12 @@ def scheduled_scrape():
     enrich_listings(new_listings)
 
 
+param_cycle = cycle([1, 2, 3, 4])
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=scheduled_scrape, trigger="interval", hours=2.5)
+scheduler.start()
+atexit.register(lambda: scheduler.shutdown())
+
+
 if __name__ == "__main__":
-    # init_db()
-    
-    param_cycle = cycle([1, 2, 3, 4])
-    scheduled_scrape()
-
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=scheduled_scrape, trigger="interval", hours=2.5)
-    scheduler.start()
-
-    import atexit
-    atexit.register(lambda: scheduler.shutdown())
-
     app.run(debug=True)
