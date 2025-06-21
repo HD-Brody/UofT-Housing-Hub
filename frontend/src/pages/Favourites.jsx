@@ -28,11 +28,12 @@ export function Favourites() {
     const [favourites, setFavourites] = useState([]);
     const [likedListings, setLikedListings] = useState({});
 
+    const API_BASE_URL = "https://uoft-housing-hub.onrender.com/api";
 
     useEffect(() => {
         const fetchFaves = async () => {
         const ids = getFavourites();
-        const res = await fetch("http://localhost:5000/api/favourites", {
+        const res = await fetch(`${API_BASE_URL}/favourites`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ids }),

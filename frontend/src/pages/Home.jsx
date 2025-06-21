@@ -17,10 +17,11 @@ export function Home() {
     const [showLoading, setShowLoading] = useState(false);
     const [sortBy, setSortBy] = useState("");
 
-
+    const API_BASE_URL = "https://uoft-housing-hub.onrender.com/api";
+    
     const handleSearch = async () => {
         setShowLoading(true);
-        const response = await fetch("http://localhost:5000/api/listings", {
+        const response = await fetch(`${API_BASE_URL}/listings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -47,7 +48,7 @@ export function Home() {
     
     const handleAISearch = async (query) => {
         setShowLoading(true);
-        const response = await fetch("http://localhost:5000/api/smart_search", {
+        const response = await fetch(`${API_BASE_URL}/smart_search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query }),
