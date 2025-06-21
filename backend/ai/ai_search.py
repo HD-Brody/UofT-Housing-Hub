@@ -17,6 +17,7 @@ def get_filters_from_query(user_query):
 
         "Guidelines:\n"
         "- 'reasonably priced' means $800–$1000 per person\n"
+        "- If price is not mentioned, assume $1000 per person"
         "- Budget should be the total for all people (e.g., 3 people = $2400–$3000)\n"
         "- 'super close to campus' = 5 minutes walk\n"
         "- 'close to campus' = 15–20 minutes walk\n"

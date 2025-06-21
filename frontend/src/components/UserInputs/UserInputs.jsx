@@ -16,10 +16,10 @@ export function UserInputs({
     return (
         <>
             <h1 className="subtitle">Find Student Housing Near UofT</h1>
+            <AISearchBar onSearch={handleAISearch} />
 
             <div className="userInputContainer">
                 <div className="userInputs">
-                    <AISearchBar onSearch={handleAISearch} />
 
                     <div className='precise-inputs'>
                         <div className="budgetSection">

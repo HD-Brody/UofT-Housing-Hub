@@ -1,0 +1,39 @@
+.smart-search {
+    max-width: fit-content;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.text {
+    max-width: fit-content;
+    margin-right: auto;
+    margin-left: auto;
+    font-weight: 500;
+    font-size: 20px;
+}
+
+.search-items {
+    max-width: fit-content;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom: 30px;
+}
+
+.search-bar {
+    min-width: 700px;
+    padding: 15px 25px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-right: 25px;
+}
+
+.search-button {
+    padding: 15px 20px;
+    border-style: none;
+    border: solid;
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: rgb(167, 167, 167);
+    cursor: pointer;
+}

@@ -1,8 +1,9 @@
 from scrapers.kijiji_scraper import get_kijiji_listings, construct_kijiji_url, filtered_listings, get_address_from_url as get_kijiji_address
 from scrapers.padmapper_scraper import get_padmapper_listings, construct_padmapper_url, get_address_from_url as get_padmapper_address
+from scrapers.image_scraper import get_first_image_url
 from db.housing_db import insert_listing
 from db.housing_db import update_listing_info
-from api.distance_matrix import get_travel_details
+from api.distance_matrix import get_travel_details, get_coordinates
 
 
 def scrape_and_insert(budget: int = None, num_beds: float = None, min_bathrooms: float = None) -> list[dict]:
@@ -53,6 +54,27 @@ def enrich_listings(results: list[dict]):
                 updated = True
             except Exception as e:
                 print(f"Could not get walk time for {listing['url']}: {e}")
+
+        # Image url
+        if "image_url" not in listing or not listing.get("listing_url"):
+            try:
+                image_url = get_first_image_url(listing["url"])
+                update_listing_info(listing["url"], image_url=image_url)
+                listing["image_url"] = image_url
+                updated = True
+            except Exception as e:
+                print(f"Could not get image url for {listing['url']}: {e}")
+        
+        # Lon/lat
+        if "lon" not in listing or not listing.get("lon"):
+            try:
+                lon, lat = get_coordinates(address[-7:])
+                update_listing_info(listing["url"], lon=lon, lat=lat)
+                listing["lon"] = lon
+                listing["lat"] = lat
+                updated = True
+            except Exception as e:
+                print(f"Could not get lon/lat for {listing['url']}: {e}")
 
         if updated:
             print(f"Updated listing: {listing['url']}")

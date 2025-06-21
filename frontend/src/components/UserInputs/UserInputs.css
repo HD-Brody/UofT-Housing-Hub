@@ -1,118 +1,118 @@
 .subtitle {
-  text-align: center;
-  font-size: 40px;
-  font-weight: bold;
-  padding-bottom: 10px;
+    text-align: center;
+    font-size: 40px;
+    font-weight: bold;
+    padding-bottom: 10px;
 }
 
 
 
 .userInputContainer {
-  display: flex;
-  justify-content: center;
+    display: flex;
+    justify-content: center;
 }
 
 .userInputs {
-  display: flex;
-  gap: 25px;
-  flex-direction: column;
-  flex-wrap: wrap;
-  background-color: white;
-  padding: 30px 40px;
-  margin-bottom: 10px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.197);
+    display: flex;
+    gap: 25px;
+    flex-direction: column;
+    flex-wrap: wrap;
+    background-color: white;
+    padding: 30px 40px;
+    margin-bottom: 10px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.197);
 }
 
 .precise-inputs {
-  display: flex;
-  flex-direction: row;
-  gap: 25px;
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
 }
 
 .userInputs label {
-  margin-bottom: 8px;
-  font-weight: 600;
-  text-align: left;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-align: left;
 }
 
 .inputGroup {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-width: 160px;
-  text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-width: 160px;
+    text-align: left;
 }
 
 .userInputs input,
 .userInputs select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  min-width: 120px;
-  font-size: 14px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    min-width: 120px;
+    font-size: 14px;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-  opacity: 1;
-  display: block;
+    opacity: 1;
+    display: block;
 }
 
 
 
 .budgetSection {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-width: 220px;
-  text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-width: 220px;
+    text-align: left;
 }
 
 .budgetSection label {
-  margin-bottom: 8px;
-  font-weight: 600;
-  text-align: left;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-align: left;
 }
 
 .budgetRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 5px;
-  height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 5px;
+    height: 32px;
 }
 
 .budgetAmount {
-  font-size: 16px;
-  font-weight: 500;
-  min-width: 60px;
-  line-height: 1;
-  padding-top: 3px;
+    font-size: 16px;
+    font-weight: 500;
+    min-width: 60px;
+    line-height: 1;
+    padding-top: 3px;
 }
 
 .budgetRow input[type="range"] {
-  flex: 1;
-  height: 4px;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-  align-self: center;
+    flex: 1;
+    height: 4px;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    align-self: center;
 }
 
 
 
 .searchButton {
-  background-color: #3b82f6;
-  color: white;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  cursor: pointer;
-  margin-top: 20px;
+    background-color: #3b82f6;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 20px;
 }
 
 .searchButton:hover {
-  background-color: #2563eb;
+    background-color: #2563eb;
 }

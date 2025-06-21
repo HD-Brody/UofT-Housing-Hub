@@ -127,7 +127,7 @@ def get_filtered_listings(max_price=None, num_bedrooms=None, min_bathrooms=None,
     ]
 
 
-def update_listing_info(url: str, address: str = None, walk_time: float = None, lon: float = None, lat: float = None) -> None:
+def update_listing_info(url: str, address: str = None, walk_time: float = None, lon: float = None, lat: float = None, image_url: str = None) -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
@@ -142,6 +142,9 @@ def update_listing_info(url: str, address: str = None, walk_time: float = None, 
 
     if lat:
         c.execute("UPDATE listings SET lat = ? WHERE url = ?", (lat, url))
+
+    if image_url:
+        c.execute("UPDATE listings SET image_url = ? WHERE url = ?", (image_url, url))
 
     conn.commit()
     conn.close()
@@ -175,7 +178,7 @@ def update_all_listings() -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    c.execute("SELECT id, address, url FROM listings where lat > 44")
+    c.execute("SELECT id, address, url FROM listings WHERE lat > 44")
     listings = c.fetchall()
 
     print(f"Found {len(listings)} listings to update")
