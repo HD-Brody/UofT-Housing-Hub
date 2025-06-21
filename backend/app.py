@@ -100,4 +100,4 @@ def start_scheduler():
     atexit.register(lambda: scheduler.shutdown())
 
 
-start_scheduler()
+# start_scheduler()
