@@ -12,7 +12,6 @@ from ai.ai_search import get_filters_from_query
 app = Flask(__name__)
 CORS(app)
 
-param_cycle = cycle([1, 2, 3, 4])
 
 @app.route("/api/listings", methods=["POST"])
 def listings():
@@ -93,6 +92,8 @@ def scheduled_scrape():
 
 if __name__ == "__main__":
     # init_db()
+    
+    param_cycle = cycle([1, 2, 3, 4])
     scheduled_scrape()
 
     scheduler = BackgroundScheduler()
