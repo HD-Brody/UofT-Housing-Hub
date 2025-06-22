@@ -20,7 +20,7 @@ def scrape_and_insert(budget: int = None, num_beds: float = None, min_bathrooms:
     for listing in padmapper_results:
         insert_listing(listing, "Padmapper")
 
-    print("All listings inserted")
+    print(f"{len(kijiji_results + padmapper_results)} listings inserted")
     return kijiji_results + padmapper_results
 
 
@@ -43,12 +43,23 @@ def enrich_listings(results: list[dict]):
                 updated = True
                 print(f"Added address: {address}")
 
+        # Lon/lat
+        if "lon" not in listing or not listing.get("lon"):
+            try:
+                lon, lat = get_coordinates(address[-7:])
+                update_listing_info(listing["url"], lon=lon, lat=lat)
+                listing["lon"] = lon
+                listing["lat"] = lat
+                updated = True
+            except Exception as e:
+                print(f"Could not get lon/lat for {listing['url']}: {e}")
+
         # Walk time
         if "walk_time_minutes" not in listing or not listing.get("walk_time_minutes"):
             try:
                 if not listing.get("address") or listing["address"].strip() == "" or listing["address"] == "N/A":
                     continue
-                walk_time, _ = get_travel_details(listing["address"])
+                walk_time, _ = get_travel_details((listing["lon"], listing["lat"]))
                 update_listing_info(listing["url"], walk_time=walk_time)
                 listing["walk_time_minutes"] = walk_time
                 updated = True
@@ -64,17 +75,6 @@ def enrich_listings(results: list[dict]):
                 updated = True
             except Exception as e:
                 print(f"Could not get image url for {listing['url']}: {e}")
-        
-        # Lon/lat
-        if "lon" not in listing or not listing.get("lon"):
-            try:
-                lon, lat = get_coordinates(address[-7:])
-                update_listing_info(listing["url"], lon=lon, lat=lat)
-                listing["lon"] = lon
-                listing["lat"] = lat
-                updated = True
-            except Exception as e:
-                print(f"Could not get lon/lat for {listing['url']}: {e}")
 
         if updated:
             print(f"Updated listing: {listing['url']}")

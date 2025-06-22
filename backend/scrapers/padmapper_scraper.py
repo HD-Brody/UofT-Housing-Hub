@@ -1,6 +1,7 @@
 import time
 import pprint
 import os
+import subprocess
 from typing import List, Dict
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -15,19 +16,23 @@ from concurrent.futures import ThreadPoolExecutor
 
 def get_driver() -> webdriver.Chrome:
     options = Options()
-    options.add_argument("--headless")
+    options.add_argument("--headless=new")  # Use new headless mode
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
+    options.add_argument("--log-level=3")  # Suppress most logs
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    # Get current file directory (scrapers/)
+    # Suppress TensorFlow and OpenCV logging (if you use them)
+    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
     scraper_dir = os.path.dirname(os.path.abspath(__file__))
+    driver_path = os.path.abspath(os.path.join(scraper_dir, "..", "chromedriver-win64", "chromedriver.exe"))
 
-    # Path to chromedriver.exe (go up one to backend/, then into chromedriver-win64/)
-    driver_path = os.path.join(scraper_dir, "..", "chromedriver-win64", "chromedriver.exe")
-    driver_path = os.path.abspath(driver_path)
-
-    # Start driver
+    # Fully suppress ChromeDriver + Chrome output
     service = Service(driver_path)
+    service.creationflags = subprocess.CREATE_NO_WINDOW  # Hides the console window (Windows only)
+    service.log_file = open(os.devnull, "w")  # Redirects ChromeDriver logs to null
+
     return webdriver.Chrome(service=service, options=options)
 
 
@@ -164,6 +169,13 @@ def get_address_from_url(listing_url: str) -> str:
         return "N/A"
 
 
+def check_if_old(listing_url: str) -> bool:
+    driver = get_driver()
+    driver.get(listing_url)
+
+    return bool(driver.find_elements(By.CSS_SELECTOR, ".row.p-no-gutter.NotAvailable_detailFullInactive__RMA9D.NotAvailable_noBorder__IcRaj"))
+
+
 if __name__ == "__main__":
     # budget = input("Max budget: ")
     # num_beds = input('Num beds: ')
@@ -174,4 +186,4 @@ if __name__ == "__main__":
     # results = get_padmapper_listings(url)
     # # filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
     # pprint.pprint(results)
-    print(get_address_from_url("https://www.padmapper.com/rentals/61455257/3-bedroom-2-bath-apartment-at-6-poplar-plains-crescent-toronto-on-m4v-1e8#back=%2Fapartments%2Ftoronto-on%2Funiversity-of-toronto%2F3-beds%2Funder-3000%3Fbathrooms%3D1%26box%3D-79.40926%2C43.65619%2C-79.38034%2C43.67045"))
+    print(check_if_old("https://www.padmapper.com/rentals/61099961/3-bedroom-3-bath-apartment-at-beverley-st-d'arcy-st-toronto-on-m5t-1j9"))

@@ -1,6 +1,7 @@
 import time
 import pprint
 import os
+import subprocess
 from typing import List, Dict
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -15,19 +16,23 @@ from concurrent.futures import ThreadPoolExecutor
 
 def get_driver() -> webdriver.Chrome:
     options = Options()
-    options.add_argument("--headless")
+    options.add_argument("--headless=new")  # Use new headless mode
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
+    options.add_argument("--log-level=3")  # Suppress most logs
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    # Get current file directory (scrapers/)
+    # Suppress TensorFlow and OpenCV logging (if you use them)
+    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
     scraper_dir = os.path.dirname(os.path.abspath(__file__))
+    driver_path = os.path.abspath(os.path.join(scraper_dir, "..", "chromedriver-win64", "chromedriver.exe"))
 
-    # Path to chromedriver.exe (go up one to backend/, then into chromedriver-win64/)
-    driver_path = os.path.join(scraper_dir, "..", "chromedriver-win64", "chromedriver.exe")
-    driver_path = os.path.abspath(driver_path)
-
-    # Start driver
+    # Fully suppress ChromeDriver + Chrome output
     service = Service(driver_path)
+    service.creationflags = subprocess.CREATE_NO_WINDOW  # Hides the console window (Windows only)
+    service.log_file = open(os.devnull, "w")  # Redirects ChromeDriver logs to null
+
     return webdriver.Chrome(service=service, options=options)
 
 
@@ -222,4 +227,4 @@ if __name__ == "__main__":
     # filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
     # pprint.pprint(filtered)
 
-    print(get_address_from_url("https://www.kijiji.ca/v-apartments-condos/city-of-toronto/downtown-toronto-near-chinatown-spacious-room/1711330231"))
+    print(check_if_old("https://www.padmapper.com/buildings/p447499/apartments-at-700-ontario-st-toronto-on-m4x-1n2"))

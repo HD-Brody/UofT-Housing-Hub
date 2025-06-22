@@ -4,7 +4,7 @@ import openrouteservice
 from dotenv import load_dotenv
 
 
-def get_travel_details(address: str, mode = 'foot-walking', destination = (-79.39559, 43.662571)) -> tuple[float]:
+def get_travel_details(coords: tuple, mode = 'foot-walking', destination = (-79.39559, 43.662571)) -> tuple[float]:
     '''
     Return tuple containing travel distance in kilometers and duration in minutes based on the mode of transportation between address and destination.
     By default, mode of transportation is walking and destination is UofT front campus.
@@ -15,10 +15,6 @@ def get_travel_details(address: str, mode = 'foot-walking', destination = (-79.3
     api_key = os.getenv("ORS_API_KEY")
 
     client = openrouteservice.Client(key=api_key)
-
-    #Get coords from address name: (lon, lat)
-    coords = get_coordinates(address)
-    # print(coords[1],coords[0])
 
     route = client.directions(coordinates=(coords, destination), profile='foot-walking',format='geojson')
 

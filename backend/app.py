@@ -94,10 +94,13 @@ def scheduled_scrape():
 def start_scheduler():
     global param_cycle
     param_cycle = cycle([1, 2, 3, 4])
+    scheduled_scrape()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=scheduled_scrape, trigger="interval", hours=2.5)
+    scheduler.add_job(func=scheduled_scrape, trigger="interval", hours=1)
     scheduler.start()
     atexit.register(lambda: scheduler.shutdown())
 
 
-# start_scheduler()
+if __name__ == "__main__":
+    start_scheduler()
+    app.run(debug=True)

@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from scrapers.image_scraper import get_first_image_url
 from api.distance_matrix import get_coordinates, get_travel_details
 from scrapers.kijiji_scraper import get_address_from_url as get_kijiji_address, check_if_old as kijiji_check_if_old
-from scrapers.padmapper_scraper import get_address_from_url as get_padmapper_address
+from scrapers.padmapper_scraper import get_address_from_url as get_padmapper_address, check_if_old as padmapper_check_if_old
 
 
 # Get the directory of the current file (i.e., db/)
@@ -187,20 +187,22 @@ def update_all_listings() -> None:
     for id, address, url in listings:
         print(f"Searching listing {count}/{len(listings)}")
         try:
-            if address[-7][0] == "M":
-                address = address[-7]
-            walk_time, _ = get_travel_details(address)
-            try:
-                lon, lat = get_coordinates(address)
-                update_listing_info(url, None, walk_time, lon, lat)
-                print(f"Successfully updated listing id: {id}")
-            except:
-                print(f"Couldn't get coords for listing id: {id}, with walk time: {walk_time}")
-                lon, lat = None, None
-        except:
-            print(f"Couldn't get walk time for listing id: {id}")
-            walk_time = None
+            if address[-7] == "M" or address[-6] == "M":
+                address = address[-7:]
+            lon, lat = get_coordinates(address)
+            update_listing_info(url, None, walk_time, lon, lat)
+            print(f"Successfully updated listing id: {id}")
 
+            try:
+                walk_time, _ = get_travel_details((lon, lat))
+            except:
+                print(f"Couldn't get walk time for listing id: {id}")
+                # print(e)
+                walk_time = None
+
+        except Exception as e:
+            print(f"Couldn't get coords for listing id: {id}, with walk time: {walk_time}")
+            lon, lat = None, None
         count += 1
     
     conn.close()
@@ -230,15 +232,17 @@ def remove_old_listings() -> None:
         try:
             is_old = False
             if source == "Kijiji":
+                pass
                 is_old = kijiji_check_if_old(url)
             elif source == "Padmapper":
-                pass
+                is_old = padmapper_check_if_old(url)
 
             if is_old:
-                c.execute("DELETE FROM listings WHERE url = ?", url)
+                c.execute("DELETE FROM listings WHERE url = ?", (url,))
                 conn.commit()
-                print((f"Deleted {deleted} listings: {url}"))
                 deleted += 1
+                print((f"Deleted {deleted} listings: {url}"))
+                
         except Exception as e:
             print(f"Could not find listing in database: {e}")
         count += 1
@@ -248,4 +252,4 @@ def remove_old_listings() -> None:
 
 
 if __name__ == "__main__":
-    remove_old_listings()
+    update_all_listings()
