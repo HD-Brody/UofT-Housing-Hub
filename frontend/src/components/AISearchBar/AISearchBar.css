@@ -1,39 +1,58 @@
 .smart-search {
-    max-width: fit-content;
-    margin-right: auto;
-    margin-left: auto;
+    max-width: 100%;
+    padding: 0 5%;
+    margin: 0 auto 40px auto;
+    text-align: center;
 }
 
 .text {
-    max-width: fit-content;
-    margin-right: auto;
-    margin-left: auto;
     font-weight: 500;
-    font-size: 20px;
+    font-size: clamp(16px, 2.5vw, 20px);
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 .search-items {
-    max-width: fit-content;
-    margin-right: auto;
-    margin-left: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
     margin-bottom: 30px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .search-bar {
-    min-width: 700px;
+    flex: 1 1 300px;
+    min-width: 250px;
+    max-width: 700px;
+    width: 100%;
     padding: 15px 25px;
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 14px;
-    margin-right: 25px;
+    box-sizing: border-box;
 }
 
 .search-button {
     padding: 15px 20px;
     border-style: none;
-    border: solid;
+    border: solid 1px rgb(167, 167, 167);
     border-radius: 10px;
-    border-width: 1px;
-    border-color: rgb(167, 167, 167);
     cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+/* Responsive behavior for smaller screens */
+@media (max-width: 768px) {
+    .search-items {
+        align-items: stretch;
+    }
+
+    .search-bar {
+        margin-right: 0;
+    }
+
 }

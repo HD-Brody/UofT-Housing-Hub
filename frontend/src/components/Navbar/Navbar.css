@@ -1,32 +1,60 @@
 .navbar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 40px;
-  padding-bottom: 40px;
-  z-index: 2;
-  margin: 0 7%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 7%;
+    z-index: 2;
+    flex-wrap: wrap;
 }
 
 .navbar h2 {
-  font-weight: 700;
+    font-weight: 700;
+    font-size: clamp(20px, 5vw, 28px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-
-
 .menu {
-  display: flex;
+    display: flex;
 }
 
 .menuItems {
-  display: flex;
-  gap: 47px;
-  list-style: none;
+    display: flex;
+    gap: 40px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
 }
 
 .menuItems a {
-  font-size: 25px;
-  color: var(--color-text);
-  text-decoration: none;
+    font-size: clamp(16px, 2.5vw, 22px);
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+/* Responsive layout below 768px (tablet and phone) */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 5%;
+        gap: 15px;
+    }
+
+    .menu {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .menuItems {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .menuItems a {
+        font-size: 18px;
+    }
 }

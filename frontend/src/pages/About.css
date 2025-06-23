@@ -13,3 +13,14 @@
 .about-page p {
     font-size: 23px;
 }
+
+@media (max-width: 768px) {
+    .about-page h1 {
+        font-size: 30px;
+    }
+
+    .about-page p {
+        font-size: 18px;
+    }
+
+}
