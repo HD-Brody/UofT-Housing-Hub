@@ -1,11 +1,10 @@
 .navbar {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 30px 7%;
     z-index: 2;
-    flex-wrap: wrap;
+    position: relative;
 }
 
 .navbar h2 {
@@ -17,44 +16,64 @@
 }
 
 .menu {
+    position: relative; /* to anchor the dropdown inside */
     display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
-.menuItems {
+.menu-button {
+    border: none;
+    background: none;
+    font-size: 30px;
+    display: none;
+    cursor: pointer;
+}
+
+/* Menu hidden and visible states */
+.menuItems,
+.menu-open {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     gap: 40px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
     flex-wrap: wrap;
 }
 
-.menuItems a {
+.menuItems a,
+.menu-open a {
     font-size: clamp(16px, 2.5vw, 22px);
     color: var(--color-text);
     text-decoration: none;
 }
 
-/* Responsive layout below 768px (tablet and phone) */
+/* Mobile styles */
 @media (max-width: 768px) {
     .navbar {
-        flex-direction: column;
-        align-items: flex-start;
         padding: 20px 5%;
-        gap: 15px;
     }
 
-    .menu {
-        width: 100%;
-        justify-content: flex-start;
+    .menu-button {
+        display: block;
     }
 
     .menuItems {
-        flex-direction: column;
-        gap: 16px;
+        display: none;
     }
 
-    .menuItems a {
-        font-size: 18px;
+    .menu-open {
+        position: absolute;
+        top: 100%; /* Drop down from menu button */
+        right: 0;
+        background-color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+        z-index: 10;
     }
 }
