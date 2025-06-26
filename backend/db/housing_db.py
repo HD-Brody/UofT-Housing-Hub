@@ -188,20 +188,24 @@ def update_all_listings() -> None:
         print(f"Searching listing {count}/{len(listings)}")
         try:
             if address[-7] == "M" or address[-6] == "M":
-                address = address[-7:]
+                address = address[-7:].strip()
+                if " " not in address:
+                    address = address[:3] + " " + address[3:]
             lon, lat = get_coordinates(address)
-            update_listing_info(url, None, walk_time, lon, lat)
+            update_listing_info(url, None, None, lon, lat)
             print(f"Successfully updated listing id: {id}")
 
             try:
                 walk_time, _ = get_travel_details((lon, lat))
+                update_listing_info(url, None, walk_time)
             except:
                 print(f"Couldn't get walk time for listing id: {id}")
                 # print(e)
                 walk_time = None
 
         except Exception as e:
-            print(f"Couldn't get coords for listing id: {id}, with walk time: {walk_time}")
+            print(e)
+            print(f"Couldn't get coords for listing id: {id}")
             lon, lat = None, None
         count += 1
     

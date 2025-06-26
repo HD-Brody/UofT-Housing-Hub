@@ -59,7 +59,7 @@ export function Listings({
                                 <p className='listings-found'>Found {results.length} listings</p>
 
                                 <select className="sort-by" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                                    {["", "Lowest price", "Hightest price", "Shortest distance", "Longest distance"].map((n) => (
+                                    {["⇅ Sort by", "Lowest price", "Hightest price", "Shortest distance", "Longest distance"].map((n) => (
                                         <option key={n} value={n}>{n}</option>
                                     ))}
                                 </select>

@@ -24,9 +24,19 @@ const hoverIcon = new L.Icon({
 export function MapView({ listings, hoveredListingUrl }) {
     const [hoveredMarkerUrl, setHoveredMarkerUrl] = useState(null);
 
-    function applyJitteredOffset(lat, lon, index) {
-        const offset = (index % 5) * 0.0002; // small offset in degrees
-        return [lat + offset, lon + offset];
+    function hashStringToOffset(str, maxOffset = 0.0003) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const offset = (hash % 100) / 100 * maxOffset;
+        return offset - maxOffset / 2;
+    }
+
+    function applyJitteredOffset(lat, lon, url) {
+        const latOffset = hashStringToOffset(url + 'lat');
+        const lonOffset = hashStringToOffset(url + 'lon');
+        return [lat + latOffset, lon + lonOffset];
     }
 
     return (
@@ -41,7 +51,7 @@ export function MapView({ listings, hoveredListingUrl }) {
                 return (
                     <Marker
                         key={listing.url}
-                        position={applyJitteredOffset(listing.lat, listing.lon, i)}
+                        position={applyJitteredOffset(listing.lat, listing.lon, listing.url)}
                         icon={isHovered ? hoverIcon : defaultIcon}
                         eventHandlers={{
                             mouseover: () => setHoveredMarkerUrl(listing.url),

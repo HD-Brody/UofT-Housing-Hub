@@ -52,5 +52,5 @@ def get_coordinates(address: str) -> tuple:
 
 
 if __name__ == '__main__':
-    test_address = "M6G1J8"
-    print(get_travel_details(test_address))
+    test_address = "M5B0C3"
+    print(get_coordinates(test_address))

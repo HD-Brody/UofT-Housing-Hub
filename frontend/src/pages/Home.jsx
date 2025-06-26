@@ -8,8 +8,8 @@ import { isFavourite } from "./Favourites";
 
 export function Home() {
     const [maxPrice, setMaxPrice] = useState("2500");
-    const [numBeds, setNumBeds] = useState("");
-    const [minBaths, setMinBaths] = useState("");
+    const [numBeds, setNumBeds] = useState("1");
+    const [minBaths, setMinBaths] = useState("1");
     const [maxWalkTime, setMaxWalkTime] = useState("20");
     const [results, setResults] = useState([]);
     const [showListings, setShowListings] = useState(false);
