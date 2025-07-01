@@ -102,5 +102,5 @@ def start_scheduler():
 
 
 if __name__ == "__main__":
-    # start_scheduler()
+    start_scheduler()
     app.run(debug=True)

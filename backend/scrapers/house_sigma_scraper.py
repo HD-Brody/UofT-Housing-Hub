@@ -36,58 +36,76 @@ def get_driver() -> webdriver.Chrome:
     return webdriver.Chrome(service=service, options=options)
 
 
-def get_kijiji_listings(url: str) -> List[Dict[str, str]]:
+def get_house_sigma_listings(pages: int = 1, url: str = "https://housesigma.com/on/map/?status=for-lease&lat=43.657411&lon=-79.387051&zoom=14.1&page=1") -> List[Dict[str, str]]:
     """
     Scrape listing summaries
     """
-    driver = get_driver()
-    driver.get(url)
-
-    cards = get_listing_cards(driver)
     listings = []
-    for card in cards:
-        listing = parse_listing_card(card)
-        # pprint.pprint(listing)
-        listings.append(listing)
-    driver.quit()
 
-    # # Multithreaded detail scraping
-    # with ThreadPoolExecutor(max_workers=5) as executor:
-    #     enriched = list(executor.map(enrich_listing_details, listings))
+    for p_num in range(pages):
+        try:
+            url = url[:-1] + str(p_num+1)
 
-    # return enriched
+            driver = get_driver()
+            driver.get(url)
+            
+            dropdown = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".dropdown.app-dropdown-options"))
+            )
+            dropdown.click()
+            button = driver.find_element(By.CLASS_NAME, "app-single-option")
+            button.click()
+            time.sleep(0.5)
+
+            cards = get_listing_cards(driver)
+
+            temp = []
+            for card in cards:
+                listing = parse_listing_card(card)
+                if "sign-in" not in listing["title"]:
+                    temp.append(listing)
+
+            listings.extend(temp)
+
+            driver.quit()
+
+        except Exception as e:
+            print(e)
+            break
+
     return listings
 
 
 def get_listing_cards(driver: WebDriver) -> List[WebElement]:
-    return driver.find_elements(By.CSS_SELECTOR, 'section[data-testid="listing-card"]')
+    return driver.find_elements(By.CSS_SELECTOR, 'article[class="pc-listing-card not-logged"]')
 
 
 def parse_listing_card(card: WebElement) -> Dict[str, str]:
     try:
-        title = card.find_element(By.CSS_SELECTOR, 'h3[data-testid="listing-title"]').text
+        title = card.find_element(By.CSS_SELECTOR, 'h3[class="address"]').text
     except:
         title = "N/A"
 
     try:
-        price = (card.find_element(By.CSS_SELECTOR, 'div[data-testid="listing-price-container"]').text)[:-3]
+        price_box = card.find_element(By.CSS_SELECTOR, 'p[class="price"]')
+        price = (price_box.find_element(By.CSS_SELECTOR, 'span[class="highlight"]').text)
     except:
         price = "N/A"
 
     try:
-        url = card.find_element(By.CSS_SELECTOR, 'a[data-testid="listing-link"]').get_attribute("href")
+        url = card.find_element(By.CSS_SELECTOR, "a").get_attribute("href")
     except:
         url = "N/A"
 
     try:
-        bedrooms = card.find_element(By.CSS_SELECTOR, 'li[aria-label="Bedrooms"]').text
+        info_box = card.find_element(By.CSS_SELECTOR, 'div[class="listing-spec-mini"]')
+        beds_baths = info_box.text.split()
+        bedrooms = eval(beds_baths[0])
+        bathrooms = beds_baths[1]
     except:
         bedrooms = "N/A"
-
-    try:
-        bathrooms = card.find_element(By.CSS_SELECTOR, 'li[aria-label="Bathrooms"]').text
-    except:
         bathrooms = "N/A"
+
 
     return {
         "title": title, 
@@ -95,7 +113,7 @@ def parse_listing_card(card: WebElement) -> Dict[str, str]:
         "url": url, 
         "bedrooms": bedrooms,
         "bathrooms": bathrooms,
-        "source": "Kijiji"
+        "source": "House Sigma"
         }
 
 
@@ -129,45 +147,6 @@ def enrich_listing_details(listing: Dict[str, str]) -> Dict[str, str]:
     return listing
 
 
-def construct_kijiji_url(budget=None, bedrooms=None, bathrooms=None):
-    base_url = "https://www.kijiji.ca/b-apartments-condos/city-of-toronto/"
-
-    # Build the keyword path segment
-    keywords = []
-    if bathrooms:
-        keywords.append(f"{bathrooms}+bathroom" if bathrooms == 1 else f"{bathrooms}+bathrooms")
-    if bedrooms:
-        keywords.append(f"{bedrooms}+bedroom" if bedrooms == 1 else f"{bedrooms}+bedrooms")
-    
-    if keywords:
-        base_url += "-".join(keywords) + "/"
-
-    # Category and filter codes (in proper order)
-    category = "c37l1700273"
-    filters = []
-    if bathrooms:
-        filters.append("a120")
-    if bedrooms:
-        filters.append("a27949001")
-
-    category_with_filters = category + "".join(filters)
-    base_url += category_with_filters
-
-    # Query parameters
-    query_params = {
-        "radius": "2.0",
-        "address": "University+of+Toronto%2C+King%27s+College+Circle%2C+Toronto%2C+ON",
-        "ll": "43.663487%2C-79.3958273",
-        "view": "list"
-    }
-    if budget:
-        query_params["price"] = f"0__{budget}"
-
-    query_string = "&".join(f"{key}={value}" for key, value in query_params.items())
-
-    return f"{base_url}?{query_string}"
-
-
 def filtered_listings(listings: List[Dict[str, str]], budget: int = None, beds: int = None, baths: int = None) -> None:
     """ 
     Return copy of listings without listings that do not fit the user's preferences.
@@ -197,34 +176,19 @@ def get_address_from_url(listing_url: str) -> str:
     driver = get_driver()
     driver.get(listing_url)
 
-    try:
-        address_el = driver.find_element(By.XPATH, '//*[@style="text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"]')
-        inner = address_el.get_attribute("innerHTML").strip()
-        return inner
-    except:
-        return "N/A"
-    finally:
-        driver.quit()
+    driver.quit()
+    pass
     
 
 def check_if_old(listing_url: str) -> bool:
     driver = get_driver()
     driver.get(listing_url)
 
-    current_url = driver.current_url
-
-    return "Removed" in current_url
+    pass
 
 
 if __name__ == "__main__":
-    # budget = input("Max budget: ")
-    # num_beds = input('Num beds: ')
-    # min_bathrooms = input('Min bathrooms: ')
-    
-    # url = construct_kijiji_url(budget,num_beds,min_bathrooms)
-    # print(url)
-    # results = get_kijiji_listings(url)
-    # filtered = filtered_listings(results, budget, num_beds, min_bathrooms)
-    # pprint.pprint(filtered)
-
-    print(check_if_old("https://www.padmapper.com/buildings/p447499/apartments-at-700-ontario-st-toronto-on-m4x-1n2"))
+    listings = get_house_sigma_listings(3)
+    for l in listings:
+        pprint.pprint(l)
+    print(len(listings))

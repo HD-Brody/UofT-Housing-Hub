@@ -38,7 +38,7 @@ def get_driver() -> webdriver.Chrome:
 
 def get_padmapper_listings(url: str) -> List[Dict[str, str]]:
     """
-    Scrape listing summaries, then enrich them in parallel.
+    Scrape listing summaries
     """
     driver = get_driver()
     driver.get(url)

@@ -178,7 +178,7 @@ def update_all_listings() -> None:
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
 
-    c.execute("SELECT id, address, url FROM listings WHERE lon is NULL")
+    c.execute("SELECT id, address, url FROM listings WHERE lon is NULL OR lon < -80 OR lat > 44")
     listings = c.fetchall()
 
     print(f"Found {len(listings)} listings to update")

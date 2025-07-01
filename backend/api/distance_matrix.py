@@ -52,5 +52,5 @@ def get_coordinates(address: str) -> tuple:
 
 
 if __name__ == '__main__':
-    test_address = "M5B0C3"
+    test_address = "601 - 280 DUNDAS Street W , Toronto - Kensington-Chinatown"
     print(get_coordinates(test_address))
